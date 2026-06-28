@@ -1,0 +1,95 @@
+---
+import { stages, timeSlots } from '../data/schedule';
+import type { Artist } from '../data/artists';
+
+export interface Props {
+  entries: Artist[];
+}
+const { entries } = Astro.props;
+---
+
+<div class="schedule-table-wrap">
+  <table class="schedule-table">
+    <thead>
+      <tr>
+        <th class="time-col">Time</th>
+        {stages.map(s => <th class="stage-col">{s}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {timeSlots.map(slot => {
+        const rowEntries = stages.map(stage => entries.find(e => e.stage === stage && e.time === slot) ?? null);
+        return (
+          <tr class="schedule-row">
+            <td class="time-cell">{slot}</td>
+            {rowEntries.map(entry => (
+              <td class="entry-cell">
+                {entry && (
+                  <div class:list={['entry-card', entry.headliner ? 'entry-headliner' : '']}>
+                    <p class="entry-name">{entry.name}</p>
+                    <p class="entry-genre">{entry.genre}</p>
+                  </div>
+                )}
+              </td>
+            ))}
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .schedule-table-wrap { overflow-x: auto; }
+  .schedule-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+  }
+  th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .time-col { width: 5rem; color: rgba(255,255,255,0.25); }
+  .stage-col { color: var(--color-cyan-neon); }
+  .schedule-row { border-top: 1px solid rgba(255,255,255,0.05); }
+  .time-cell {
+    padding: 0.75rem 1rem 0.75rem 0;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    white-space: nowrap;
+  }
+  .entry-cell { padding: 0.5rem; }
+  .entry-card {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.2s;
+  }
+  .entry-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(0,229,255,0.2);
+  }
+  .entry-headliner {
+    background: rgba(255,0,200,0.06);
+    border-color: rgba(255,0,200,0.2);
+  }
+  .entry-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: white;
+    margin-bottom: 0.2rem;
+  }
+  .entry-genre {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+  }
+</style>

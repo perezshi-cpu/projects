@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-void: #0a0a0f;
+  --color-deep-space: #0d0d1a;
+  --color-nebula: #1a1a2e;
+  --color-indigo-deep: #16213e;
+  --color-cyan-neon: #00e5ff;
+  --color-magenta-neon: #ff00c8;
+  --color-gold-warm: #ffd700;
+  --color-purple-deep: #6b21a8;
+
+  /* Fonts */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* Animations */
+  --animate-glow-pulse: glowPulse 4s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-slow: float 11s ease-in-out infinite;
+  --animate-fade-in-up: fadeInUp 1s ease-out both;
+
+  /* Keyframes */
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 20px #00e5ff55, 0 0 40px #00e5ff33; }
+    50%       { text-shadow: 0 0 40px #ff00c880, 0 0 80px #ff00c840, 0 0 120px #ff00c820; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px)   rotate(0deg); }
+    50%       { transform: translateY(-24px) rotate(2deg); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { background-color: var(--color-void); color: white; font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  ::-webkit-scrollbar       { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0f; }
+  ::-webkit-scrollbar-thumb { background: #6b21a8; border-radius: 3px; }
+}
+
+/* ---------- Components ---------- */
+@layer components {
+  .card-glass {
+    border-radius: 1rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.3s;
+  }
+  .card-glass:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,229,255,0.3);
+    box-shadow: 0 0 20px rgba(0,229,255,0.3), 0 0 60px rgba(0,229,255,0.1);
+  }
+
+  .text-gradient-cyan-magenta {
+    background: linear-gradient(135deg, #00e5ff, #ff00c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #ffd700, #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: var(--color-magenta-neon);
+    color: white;
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(255,0,200,0.4), 0 0 60px rgba(255,0,200,0.2);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid rgba(0,229,255,0.5);
+    color: var(--color-cyan-neon);
+    transition: all 0.3s;
+    text-decoration: none;
+  }
+  .btn-ghost:hover {
+    background: rgba(0,229,255,0.1);
+    border-color: var(--color-cyan-neon);
+    box-shadow: 0 0 20px rgba(0,229,255,0.3), 0 0 60px rgba(0,229,255,0.1);
+  }
+
+  .tab-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    cursor: pointer;
+    background: transparent;
+  }
+  .tab-btn:hover {
+    color: white;
+    border-color: rgba(255,255,255,0.3);
+  }
+  .tab-btn[aria-selected="true"] {
+    background: rgba(0,229,255,0.1);
+    border-color: rgba(0,229,255,0.5);
+    color: var(--color-cyan-neon);
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,229,255,0.3), transparent);
+  }
+}

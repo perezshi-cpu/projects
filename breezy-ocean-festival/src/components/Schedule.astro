@@ -1,0 +1,108 @@
+---
+import { days, scheduleData } from '../data/schedule';
+import ScheduleDay from './ScheduleDay.astro';
+---
+
+<section id="schedule" class="schedule-section">
+  <div class="schedule-inner">
+    <!-- Header -->
+    <div class="schedule-header">
+      <p class="section-label">Timetable</p>
+      <h2 class="schedule-title">
+        <span class="text-gradient-gold">Schedule</span>
+      </h2>
+      <p class="schedule-subtitle">Plan your journey across three nights on the main stage.</p>
+    </div>
+
+    <!-- Day tabs -->
+    <div class="tab-bar" role="tablist" aria-label="Festival days">
+      {days.map((day, i) => (
+        <button
+          class="tab-btn"
+          role="tab"
+          data-tab={day}
+          aria-selected={i === 0 ? 'true' : 'false'}
+        >
+          {day}
+        </button>
+      ))}
+    </div>
+
+    <!-- Day panels -->
+    {days.map((day, i) => (
+      <div
+        data-panel={day}
+        role="tabpanel"
+        class:list={['panel', i !== 0 ? 'panel-hidden' : '']}
+      >
+        <ScheduleDay entries={scheduleData[day]} />
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('[data-tab]');
+  const panels = document.querySelectorAll<HTMLElement>('[data-panel]');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab!;
+
+      tabs.forEach(t => t.setAttribute('aria-selected', 'false'));
+      tab.setAttribute('aria-selected', 'true');
+
+      panels.forEach(panel => {
+        if (panel.getAttribute('data-panel') === target) {
+          panel.classList.remove('panel-hidden');
+        } else {
+          panel.classList.add('panel-hidden');
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .schedule-section {
+    padding: 6rem 1.5rem;
+    background: linear-gradient(to bottom, transparent, rgba(13,13,26,0.5), transparent);
+  }
+  .schedule-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+  .schedule-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 0.75rem;
+  }
+  .schedule-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+  .schedule-subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.45);
+  }
+  .tab-bar {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .panel-hidden { display: none; }
+</style>

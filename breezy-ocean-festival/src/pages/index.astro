@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import Hero from '../components/Hero.astro';
+import Lineup from '../components/Lineup.astro';
+import Schedule from '../components/Schedule.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navigation />
+  <main>
+    <Hero />
+    <div class="section-divider"></div>
+    <Lineup />
+    <div class="section-divider"></div>
+    <Schedule />
+  </main>
+  <Footer />
+</Layout>

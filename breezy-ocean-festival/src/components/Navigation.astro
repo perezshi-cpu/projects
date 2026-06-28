@@ -1,0 +1,79 @@
+---
+---
+<header
+  id="main-nav"
+  style="position:fixed;top:0;left:0;right:0;z-index:50;padding:1rem 1.5rem;transition:background 0.3s,backdrop-filter 0.3s,box-shadow 0.3s;"
+>
+  <nav style="max-width:80rem;margin:0 auto;display:flex;align-items:center;justify-content:space-between;">
+    <!-- Logo -->
+    <a href="#" style="font-family:var(--font-display);font-size:1.25rem;font-weight:800;letter-spacing:0.05em;text-decoration:none;color:white;">
+      <span class="text-gradient-cyan-magenta">MF</span>
+    </a>
+
+    <!-- Desktop links -->
+    <div style="display:none;gap:2rem;align-items:center;" id="desktop-links">
+      <a href="#lineup"   style="font-family:var(--font-display);font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.7);text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Lineup</a>
+      <a href="#schedule" style="font-family:var(--font-display);font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.7);text-decoration:none;letter-spacing:0.05em;transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Schedule</a>
+    </div>
+
+    <!-- Hamburger -->
+    <button id="hamburger" aria-label="Toggle menu" style="display:flex;flex-direction:column;gap:5px;padding:0.5rem;background:none;border:none;cursor:pointer;">
+      <span style="display:block;width:24px;height:2px;background:white;border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:24px;height:2px;background:white;border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:24px;height:2px;background:white;border-radius:2px;transition:all 0.3s;"></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" style="display:none;padding:1rem 0;border-top:1px solid rgba(255,255,255,0.1);margin-top:1rem;">
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      <a href="#lineup"   style="font-family:var(--font-display);font-size:1rem;font-weight:500;color:rgba(255,255,255,0.8);text-decoration:none;">Lineup</a>
+      <a href="#schedule" style="font-family:var(--font-display);font-size:1rem;font-weight:500;color:rgba(255,255,255,0.8);text-decoration:none;">Schedule</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const nav = document.getElementById('main-nav') as HTMLElement;
+  const desktopLinks = document.getElementById('desktop-links') as HTMLElement;
+  const hamburger = document.getElementById('hamburger') as HTMLButtonElement;
+  const mobileMenu = document.getElementById('mobile-menu') as HTMLElement;
+
+  // Show desktop links on larger screens
+  function updateLayout() {
+    if (window.innerWidth >= 768) {
+      desktopLinks.style.display = 'flex';
+      hamburger.style.display = 'none';
+      mobileMenu.style.display = 'none';
+    } else {
+      desktopLinks.style.display = 'none';
+      hamburger.style.display = 'flex';
+    }
+  }
+  updateLayout();
+  window.addEventListener('resize', updateLayout);
+
+  // Scroll-aware nav background
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(10,10,15,0.95)';
+      nav.style.backdropFilter = 'blur(12px)';
+      nav.style.boxShadow = '0 4px 24px rgba(0,0,0,0.4)';
+    } else {
+      nav.style.background = 'transparent';
+      nav.style.backdropFilter = 'none';
+      nav.style.boxShadow = 'none';
+    }
+  });
+
+  // Hamburger toggle
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.style.display === 'block';
+    mobileMenu.style.display = isOpen ? 'none' : 'block';
+  });
+
+  // Close mobile menu on link click
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => { mobileMenu.style.display = 'none'; });
+  });
+</script>
