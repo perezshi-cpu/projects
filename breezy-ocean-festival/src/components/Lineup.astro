@@ -1,6 +1,8 @@
 ---
 import { artists } from '../data/artists';
 import ArtistCard from './ArtistCard.astro';
+
+const performers = artists.filter(a => !a.isBreak && !a.scheduleOnly);
 ---
 
 <section id="lineup" class="lineup-section">
@@ -18,7 +20,7 @@ import ArtistCard from './ArtistCard.astro';
 
     <!-- Artist grid -->
     <div class="artist-grid">
-      {artists.map(artist => <ArtistCard {...artist} />)}
+      {performers.map(artist => <ArtistCard {...artist} />)}
     </div>
   </div>
 </section>

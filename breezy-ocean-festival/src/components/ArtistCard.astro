@@ -35,8 +35,8 @@ const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase
   <!-- Card body -->
   <div style="padding:1rem;">
     <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:white;margin-bottom:0.25rem;">{name}</h3>
-    <p style="font-size:0.75rem;color:var(--color-cyan-neon);opacity:0.8;margin-bottom:0.5rem;">{genre}</p>
-    <p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-bottom:0.5rem;">{origin}</p>
+    {genre  && <p style="font-size:0.75rem;color:var(--color-cyan-neon);opacity:0.8;margin-bottom:0.25rem;">{genre}</p>}
+    {origin && <p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-bottom:0.25rem;">{origin}</p>}
     <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
       <span style="font-size:0.65rem;font-family:var(--font-display);font-weight:600;color:var(--color-gold-warm);opacity:0.8;">{day}</span>
       <span style="font-size:0.65rem;color:rgba(255,255,255,0.2);">·</span>

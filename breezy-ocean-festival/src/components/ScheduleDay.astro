@@ -6,6 +6,11 @@ export interface Props {
   entries: Artist[];
 }
 const { entries } = Astro.props;
+
+// Only show time slots that have at least one entry on this day
+const activeSlots = timeSlots.filter(slot =>
+  entries.some(e => e.time === slot)
+);
 ---
 
 <div class="schedule-table-wrap">
@@ -17,17 +22,23 @@ const { entries } = Astro.props;
       </tr>
     </thead>
     <tbody>
-      {timeSlots.map(slot => {
+      {activeSlots.map(slot => {
         const rowEntries = stages.map(stage => entries.find(e => e.stage === stage && e.time === slot) ?? null);
         return (
           <tr class="schedule-row">
             <td class="time-cell">{slot}</td>
             {rowEntries.map(entry => (
               <td class="entry-cell">
-                {entry && (
+                {entry && !entry.isBreak && (
                   <div class:list={['entry-card', entry.headliner ? 'entry-headliner' : '']}>
                     <p class="entry-name">{entry.name}</p>
-                    <p class="entry-genre">{entry.genre}</p>
+                    {entry.genre && <p class="entry-genre">{entry.genre}</p>}
+                  </div>
+                )}
+                {entry?.isBreak && (
+                  <div class="entry-break">
+                    <p class="break-label">Break</p>
+                    <p class="break-time">{entry.genre}</p>
                   </div>
                 )}
               </td>
@@ -43,7 +54,7 @@ const { entries } = Astro.props;
   .schedule-table-wrap { overflow-x: auto; }
   .schedule-table {
     width: 100%;
-    min-width: 640px;
+    min-width: 400px;
     border-collapse: collapse;
   }
   th {
@@ -91,5 +102,24 @@ const { entries } = Astro.props;
   .entry-genre {
     font-size: 0.7rem;
     color: rgba(255,255,255,0.4);
+  }
+  .entry-break {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(255,215,0,0.04);
+    border: 1px dashed rgba(255,215,0,0.2);
+    text-align: center;
+  }
+  .break-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--color-gold-warm);
+    opacity: 0.7;
+    margin-bottom: 0.2rem;
+  }
+  .break-time {
+    font-size: 0.7rem;
+    color: rgba(255,215,0,0.4);
   }
 </style>
