@@ -6,43 +6,128 @@ export interface Props {
   day: string;
   stage: string;
   time: string;
+  photo?: string;
   headliner?: boolean;
 }
 
-const { name, origin, genre, day, stage, time, headliner = false } = Astro.props;
+const { name, origin, genre, day, stage, time, photo, headliner = false } = Astro.props;
 
-// Deterministic hue from artist name for unique gradient per card
+// Fallback gradient if no photo
 const hue = (name.charCodeAt(0) * 37 + name.charCodeAt(name.length - 1) * 13) % 360;
 const hue2 = (hue + 60) % 360;
 const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 ---
 
-<div
-  class="card-glass"
-  style="position:relative;overflow:hidden;cursor:default;"
->
+<div class="card-glass artist-card">
   {headliner && (
-    <span style="position:absolute;top:0.75rem;right:0.75rem;z-index:10;font-family:var(--font-display);font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:9999px;background:var(--color-magenta-neon);color:white;">
-      Headliner
-    </span>
+    <span class="headliner-badge">Headliner</span>
   )}
 
-  <!-- Gradient pseudo-image -->
-  <div style={`height:9rem;background:conic-gradient(from 180deg at 50% 60%, hsl(${hue},70%,30%), hsl(${hue2},60%,20%), hsl(${hue},80%,15%));display:flex;align-items:center;justify-content:center;`}>
-    <span style={`font-family:var(--font-display);font-size:2.5rem;font-weight:800;color:hsl(${hue},80%,75%);opacity:0.7;user-select:none;`}>{initials}</span>
+  <!-- Photo or gradient fallback -->
+  <div class="card-img-wrap">
+    {photo
+      ? <img src={photo} alt={name} class="card-img" />
+      : <div class="card-img-fallback" style={`background:conic-gradient(from 180deg at 50% 60%, hsl(${hue},70%,30%), hsl(${hue2},60%,20%), hsl(${hue},80%,15%));`}>
+          <span class="card-initials" style={`color:hsl(${hue},80%,75%);`}>{initials}</span>
+        </div>
+    }
   </div>
 
   <!-- Card body -->
-  <div style="padding:1rem;">
-    <h3 style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:white;margin-bottom:0.25rem;">{name}</h3>
-    {genre  && <p style="font-size:0.75rem;color:var(--color-cyan-neon);opacity:0.8;margin-bottom:0.25rem;">{genre}</p>}
-    {origin && <p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-bottom:0.25rem;">{origin}</p>}
-    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-      <span style="font-size:0.65rem;font-family:var(--font-display);font-weight:600;color:var(--color-gold-warm);opacity:0.8;">{day}</span>
-      <span style="font-size:0.65rem;color:rgba(255,255,255,0.2);">·</span>
-      <span style="font-size:0.65rem;font-family:var(--font-display);font-weight:600;color:rgba(255,255,255,0.5);">{stage}</span>
-      <span style="font-size:0.65rem;color:rgba(255,255,255,0.2);">·</span>
-      <span style="font-size:0.65rem;font-family:var(--font-display);font-weight:600;color:rgba(255,255,255,0.4);">{time}</span>
+  <div class="card-body">
+    <h3 class="card-name">{name}</h3>
+    {genre  && <p class="card-genre">{genre}</p>}
+    {origin && <p class="card-origin">{origin}</p>}
+    <div class="card-meta">
+      <span class="meta-day">{day}</span>
+      <span class="meta-dot">·</span>
+      <span class="meta-stage">{stage}</span>
+      <span class="meta-dot">·</span>
+      <span class="meta-time">{time}</span>
     </div>
   </div>
 </div>
+
+<style>
+  .artist-card {
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+  .headliner-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 10;
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    background: var(--color-magenta-neon);
+    color: white;
+  }
+  .card-img-wrap {
+    height: 11rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .artist-card:hover .card-img {
+    transform: scale(1.05);
+  }
+  .card-img-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-initials {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 800;
+    opacity: 0.7;
+    user-select: none;
+  }
+  .card-body {
+    padding: 1rem;
+  }
+  .card-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 0.25rem;
+  }
+  .card-genre {
+    font-size: 0.75rem;
+    color: var(--color-cyan-neon);
+    opacity: 0.8;
+    margin-bottom: 0.25rem;
+  }
+  .card-origin {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 0.25rem;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .meta-day   { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: var(--color-gold-warm); opacity: 0.8; }
+  .meta-stage { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: rgba(255,255,255,0.5); }
+  .meta-time  { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: rgba(255,255,255,0.4); }
+  .meta-dot   { font-size: 0.65rem; color: rgba(255,255,255,0.2); }
+</style>

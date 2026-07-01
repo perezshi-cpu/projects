@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import url(https://db.onlinewebfonts.com/c/ff9f9b187dc224f3f985a8fadbd88d45?family=All+Round+Gothic+W01+Medium);
+@import url(https://db.onlinewebfonts.com/c/035985f659efe093bb3824446b5743a3?family=All+Round+Gothic+W03+Bold);
 
 @theme {
   /* Colors */
@@ -12,7 +14,7 @@
   --color-purple-deep: #6b21a8;
 
   /* Fonts */
-  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-display: "All Round Gothic W03 Bold", "All Round Gothic W01 Medium", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
 
   /* Animations */
