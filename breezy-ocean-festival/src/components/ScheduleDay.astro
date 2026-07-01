@@ -30,9 +30,8 @@ const activeSlots = timeSlots.filter(slot =>
             {rowEntries.map(entry => (
               <td class="entry-cell">
                 {entry && !entry.isBreak && (
-                  <div class:list={['entry-card', entry.headliner ? 'entry-headliner' : '']}>
+                  <div class="entry-card">
                     <p class="entry-name">{entry.name}</p>
-                    {entry.genre && <p class="entry-genre">{entry.genre}</p>}
                   </div>
                 )}
                 {entry?.isBreak && (

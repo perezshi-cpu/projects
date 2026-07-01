@@ -10,7 +10,7 @@ export interface Props {
   headliner?: boolean;
 }
 
-const { name, origin, genre, day, stage, time, photo, headliner = false } = Astro.props;
+const { name, day, photo } = Astro.props;
 
 // Fallback gradient if no photo
 const hue = (name.charCodeAt(0) * 37 + name.charCodeAt(name.length - 1) * 13) % 360;
@@ -19,10 +19,6 @@ const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase
 ---
 
 <div class="card-glass artist-card">
-  {headliner && (
-    <span class="headliner-badge">Headliner</span>
-  )}
-
   <!-- Photo or gradient fallback -->
   <div class="card-img-wrap">
     {photo
@@ -36,15 +32,7 @@ const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase
   <!-- Card body -->
   <div class="card-body">
     <h3 class="card-name">{name}</h3>
-    {genre  && <p class="card-genre">{genre}</p>}
-    {origin && <p class="card-origin">{origin}</p>}
-    <div class="card-meta">
-      <span class="meta-day">{day}</span>
-      <span class="meta-dot">·</span>
-      <span class="meta-stage">{stage}</span>
-      <span class="meta-dot">·</span>
-      <span class="meta-time">{time}</span>
-    </div>
+    <span class="meta-day">{day}</span>
   </div>
 </div>
 
@@ -53,21 +41,6 @@ const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase
     position: relative;
     overflow: hidden;
     cursor: default;
-  }
-  .headliner-badge {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    z-index: 10;
-    font-family: var(--font-display);
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.6rem;
-    border-radius: 9999px;
-    background: var(--color-magenta-neon);
-    color: white;
   }
   .card-img-wrap {
     height: 11rem;
@@ -109,25 +82,5 @@ const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase
     color: white;
     margin-bottom: 0.25rem;
   }
-  .card-genre {
-    font-size: 0.75rem;
-    color: var(--color-cyan-neon);
-    opacity: 0.8;
-    margin-bottom: 0.25rem;
-  }
-  .card-origin {
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.45);
-    margin-bottom: 0.25rem;
-  }
-  .card-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .meta-day   { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: var(--color-gold-warm); opacity: 0.8; }
-  .meta-stage { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: rgba(255,255,255,0.5); }
-  .meta-time  { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: rgba(255,255,255,0.4); }
-  .meta-dot   { font-size: 0.65rem; color: rgba(255,255,255,0.2); }
+  .meta-day { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: var(--color-gold-warm); opacity: 0.8; }
 </style>

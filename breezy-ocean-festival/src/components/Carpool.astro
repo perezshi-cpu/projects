@@ -1,0 +1,148 @@
+---
+---
+
+<section id="carpool" class="carpool-section">
+  <div class="carpool-inner">
+
+    <div class="carpool-header">
+      <p class="section-label">Get There Together</p>
+      <h2 class="carpool-title">
+        <span class="text-gradient-cyan-magenta">Carpool</span>
+      </h2>
+      <p class="carpool-subtitle">
+        Share the ride, split the cost, start the journey early.
+      </p>
+    </div>
+
+    <div class="carpool-card card-glass">
+      <div class="carpool-cols">
+
+        <!-- Left: how it works -->
+        <div class="carpool-how">
+          <h3 class="col-title">How it works</h3>
+          <ol class="steps">
+            <li>Join the carpool WhatsApp group via the button below</li>
+            <li>Post your city, departure time, and available seats — or browse existing offers</li>
+            <li>Coordinate directly with your fellow travellers</li>
+            <li>Meet at the agreed pickup point and drive to the desert together</li>
+          </ol>
+        </div>
+
+
+      </div>
+
+      <!-- CTA -->
+      <div class="carpool-cta">
+        <a href="#" class="btn-primary carpool-btn">Join the WhatsApp Group</a>
+        <p class="cta-note">Link will be updated closer to the event</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .carpool-section {
+    padding: 6rem 1.5rem;
+  }
+  .carpool-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+  .carpool-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 0.75rem;
+  }
+  .carpool-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+  .carpool-subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.45);
+    max-width: 32rem;
+    margin: 0 auto;
+  }
+  .carpool-card {
+    padding: 2.5rem;
+  }
+  .carpool-cols {
+    display: block;
+  }
+  .col-title {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-cyan-neon);
+    opacity: 0.8;
+    margin-bottom: 1.25rem;
+  }
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: steps;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  .steps li {
+    counter-increment: steps;
+    display: flex;
+    gap: 0.875rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+  }
+  .steps li::before {
+    content: counter(steps);
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: rgba(0,229,255,0.12);
+    border: 1px solid rgba(0,229,255,0.25);
+    color: var(--color-cyan-neon);
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .carpool-cta {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .carpool-btn {
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.875rem 2.5rem;
+    text-decoration: none;
+  }
+  .cta-note {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.25);
+    font-style: italic;
+  }
+</style>
