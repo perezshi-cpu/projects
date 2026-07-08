@@ -1,20 +1,21 @@
 ---
 import { artists } from '../data/artists';
 import ArtistCard from './ArtistCard.astro';
+import ArtistModal from './ArtistModal.astro';
 
 const performers = artists.filter(a => !a.isBreak && !a.scheduleOnly);
 ---
 
-<section id="lineup" class="lineup-section">
+<section id="lineup" class="lineup-section" dir="rtl" lang="he">
   <div class="lineup-inner">
     <!-- Section header -->
     <div class="lineup-header">
-      <p class="section-label">Artists</p>
+      <p class="section-label">אמנים</p>
       <h2 class="lineup-title">
-        <span class="text-gradient-cyan-magenta">2026 Lineup</span>
+        <span class="text-gradient-cyan-magenta">סדר הופעות 2026</span>
       </h2>
       <p class="lineup-subtitle">
-        Three nights of psytrance on the main stage in the desert oasis of Shitim.
+        שלושה לילות של פסיטראנס על הבמה הראשית בנווה המדבר שיטים.
       </p>
     </div>
 
@@ -23,6 +24,8 @@ const performers = artists.filter(a => !a.isBreak && !a.scheduleOnly);
       {performers.map(artist => <ArtistCard {...artist} />)}
     </div>
   </div>
+
+  <ArtistModal />
 </section>
 
 <style>

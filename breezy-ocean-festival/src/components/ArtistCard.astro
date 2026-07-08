@@ -1,4 +1,7 @@
 ---
+import { getArtistFallback } from '../lib/artistFallback';
+import { dayLabels } from '../lib/hebrewLabels';
+
 export interface Props {
   name: string;
   origin: string;
@@ -10,15 +13,27 @@ export interface Props {
   headliner?: boolean;
 }
 
-const { name, day, photo } = Astro.props;
+const { name, origin, genre, day, stage, time, photo } = Astro.props;
 
 // Fallback gradient if no photo
-const hue = (name.charCodeAt(0) * 37 + name.charCodeAt(name.length - 1) * 13) % 360;
-const hue2 = (hue + 60) % 360;
-const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const { hue, hue2, initials } = getArtistFallback(name);
 ---
 
-<div class="card-glass artist-card">
+<div
+  class="card-glass artist-card"
+  role="button"
+  tabindex="0"
+  aria-haspopup="dialog"
+  aria-label={`צפו במידע על ${name}`}
+  data-artist-trigger
+  data-name={name}
+  data-day={day}
+  data-stage={stage}
+  data-time={time}
+  data-genre={genre}
+  data-origin={origin}
+  data-photo={photo ?? ''}
+>
   <!-- Photo or gradient fallback -->
   <div class="card-img-wrap">
     {photo
@@ -32,7 +47,7 @@ const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase
   <!-- Card body -->
   <div class="card-body">
     <h3 class="card-name">{name}</h3>
-    <span class="meta-day">{day}</span>
+    <span class="meta-day">{dayLabels[day] ?? day}</span>
   </div>
 </div>
 
@@ -40,7 +55,11 @@ const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase
   .artist-card {
     position: relative;
     overflow: hidden;
-    cursor: default;
+    cursor: pointer;
+  }
+  .artist-card:focus-visible {
+    outline: 2px solid var(--color-cyan-neon);
+    outline-offset: 2px;
   }
   .card-img-wrap {
     height: 11rem;

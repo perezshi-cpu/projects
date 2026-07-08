@@ -1,6 +1,7 @@
 ---
 import { stages, timeSlots } from '../data/schedule';
 import type { Artist } from '../data/artists';
+import { stageLabels } from '../lib/hebrewLabels';
 
 export interface Props {
   entries: Artist[];
@@ -17,8 +18,8 @@ const activeSlots = timeSlots.filter(slot =>
   <table class="schedule-table">
     <thead>
       <tr>
-        <th class="time-col">Time</th>
-        {stages.map(s => <th class="stage-col">{s}</th>)}
+        <th class="time-col">שעה</th>
+        {stages.map(s => <th class="stage-col">{stageLabels[s] ?? s}</th>)}
       </tr>
     </thead>
     <tbody>
@@ -36,7 +37,7 @@ const activeSlots = timeSlots.filter(slot =>
                 )}
                 {entry?.isBreak && (
                   <div class="entry-break">
-                    <p class="break-label">Break</p>
+                    <p class="break-label">הפסקה</p>
                     <p class="break-time">{entry.genre}</p>
                   </div>
                 )}
@@ -58,7 +59,7 @@ const activeSlots = timeSlots.filter(slot =>
   }
   th {
     padding: 0.75rem 1rem;
-    text-align: left;
+    text-align: start;
     font-family: var(--font-display);
     font-size: 0.8rem;
     font-weight: 600;
@@ -69,7 +70,9 @@ const activeSlots = timeSlots.filter(slot =>
   .stage-col { color: var(--color-cyan-neon); }
   .schedule-row { border-top: 1px solid rgba(255,255,255,0.05); }
   .time-cell {
-    padding: 0.75rem 1rem 0.75rem 0;
+    padding-block: 0.75rem;
+    padding-inline-end: 1rem;
+    padding-inline-start: 0;
     font-family: monospace;
     font-size: 0.75rem;
     color: rgba(255,255,255,0.3);

@@ -1,21 +1,22 @@
 ---
 import { days, scheduleData } from '../data/schedule';
 import ScheduleDay from './ScheduleDay.astro';
+import { dayLabels } from '../lib/hebrewLabels';
 ---
 
-<section id="schedule" class="schedule-section">
+<section id="schedule" class="schedule-section" dir="rtl" lang="he">
   <div class="schedule-inner">
     <!-- Header -->
     <div class="schedule-header">
-      <p class="section-label">Timetable</p>
+      <p class="section-label">לוח זמנים</p>
       <h2 class="schedule-title">
-        <span class="text-gradient-gold">Schedule</span>
+        <span class="text-gradient-gold">התוכנייה</span>
       </h2>
-      <p class="schedule-subtitle">Plan your journey across three nights on the main stage.</p>
+      <p class="schedule-subtitle">תכננו את הלילות שלכם על הבמה הראשית.</p>
     </div>
 
     <!-- Day tabs -->
-    <div class="tab-bar" role="tablist" aria-label="Festival days">
+    <div class="tab-bar" role="tablist" aria-label="ימי הפסטיבל">
       {days.map((day, i) => (
         <button
           class="tab-btn"
@@ -23,7 +24,7 @@ import ScheduleDay from './ScheduleDay.astro';
           data-tab={day}
           aria-selected={i === 0 ? 'true' : 'false'}
         >
-          {day}
+          {dayLabels[day] ?? day}
         </button>
       ))}
     </div>

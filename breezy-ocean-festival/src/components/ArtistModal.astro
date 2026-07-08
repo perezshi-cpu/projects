@@ -1,0 +1,198 @@
+<div id="artist-modal-overlay" class="artist-modal-overlay modal-hidden">
+  <div
+    id="artist-modal-panel"
+    class="artist-modal-panel card-glass"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="artist-modal-name"
+  >
+    <button id="artist-modal-close" class="artist-modal-close" aria-label="סגור">&times;</button>
+
+    <div id="artist-modal-media" class="artist-modal-media"></div>
+
+    <div class="artist-modal-body">
+      <h3 id="artist-modal-name" class="artist-modal-name"></h3>
+      <p id="artist-modal-meta" class="artist-modal-meta"></p>
+      <p id="artist-modal-genre-origin" class="artist-modal-genre-origin"></p>
+      <p id="artist-modal-bio" class="artist-modal-bio"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { getArtistFallback } from '../lib/artistFallback';
+  import { dayLabels, stageLabels } from '../lib/hebrewLabels';
+
+  const overlay = document.getElementById('artist-modal-overlay') as HTMLElement;
+  const closeBtn = document.getElementById('artist-modal-close') as HTMLButtonElement;
+  const mediaEl = document.getElementById('artist-modal-media') as HTMLElement;
+  const nameEl = document.getElementById('artist-modal-name') as HTMLElement;
+  const metaEl = document.getElementById('artist-modal-meta') as HTMLElement;
+  const genreOriginEl = document.getElementById('artist-modal-genre-origin') as HTMLElement;
+  const bioEl = document.getElementById('artist-modal-bio') as HTMLElement;
+
+  const triggers = document.querySelectorAll<HTMLElement>('[data-artist-trigger]');
+
+  let lastFocused: HTMLElement | null = null;
+
+  function openModal(trigger: HTMLElement) {
+    const { name = '', day = '', stage = '', time = '', genre = '', origin = '', photo = '' } = trigger.dataset;
+
+    lastFocused = trigger;
+
+    nameEl.textContent = name;
+    metaEl.textContent = [dayLabels[day] ?? day, stageLabels[stage] ?? stage, time].filter(Boolean).join(' · ');
+
+    const genreOrigin = [genre, origin].filter(Boolean).join(' · ');
+    genreOriginEl.textContent = genreOrigin;
+    genreOriginEl.style.display = genreOrigin ? '' : 'none';
+
+    bioEl.textContent = `הביוגרפיה המלאה תפורסם בקרוב. חזרו לבקר לעוד פרטים על הסאונד, הרקע והסיפור של ${name}.`;
+
+    if (photo) {
+      mediaEl.innerHTML = `<img src="${photo}" alt="${name}" class="artist-modal-img" />`;
+    } else {
+      const { hue, hue2, initials } = getArtistFallback(name);
+      mediaEl.innerHTML = `
+        <div class="artist-modal-fallback" style="background:conic-gradient(from 180deg at 50% 60%, hsl(${hue},70%,30%), hsl(${hue2},60%,20%), hsl(${hue},80%,15%));">
+          <span class="artist-modal-initials" style="color:hsl(${hue},80%,75%);">${initials}</span>
+        </div>
+      `;
+    }
+
+    overlay.classList.remove('modal-hidden');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    overlay.classList.add('modal-hidden');
+    document.body.style.overflow = '';
+    lastFocused?.focus();
+  }
+
+  triggers.forEach(trigger => {
+    trigger.addEventListener('click', () => openModal(trigger));
+    trigger.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(trigger);
+      }
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+
+  overlay.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && !overlay.classList.contains('modal-hidden')) {
+      closeModal();
+    }
+  });
+</script>
+
+<style>
+  .artist-modal-overlay.modal-hidden {
+    display: none;
+  }
+  .artist-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .artist-modal-panel {
+    position: relative;
+    width: 100%;
+    max-width: 26rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .artist-modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .artist-modal-close:hover,
+  .artist-modal-close:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--color-cyan-neon);
+    outline: none;
+  }
+  .artist-modal-media {
+    height: 12rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+  .artist-modal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+  .artist-modal-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .artist-modal-initials {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 800;
+    opacity: 0.7;
+    user-select: none;
+  }
+  .artist-modal-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 0.35rem;
+    padding-right: 2rem;
+  }
+  .artist-modal-meta {
+    font-size: 0.8rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-gold-warm);
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+  }
+  .artist-modal-genre-origin {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1rem;
+  }
+  .artist-modal-bio {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.75);
+  }
+</style>
