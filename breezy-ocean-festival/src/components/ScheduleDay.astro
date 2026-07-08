@@ -31,12 +31,21 @@ const activeSlots = timeSlots.filter(slot =>
             {rowEntries.map(entry => (
               <td class="entry-cell">
                 {entry && !entry.isBreak && (
-                  <div class="entry-card">
-                    <p class="entry-name">{entry.name}</p>
+                  <div class="entry-card" data-day={entry.day} data-time={entry.time}>
+                    <p class="entry-name">
+                      <span class="entry-name-text">{entry.name}</span>
+                      <span class="live-icon" aria-hidden="true">
+                        <video class="live-icon-video" muted loop playsinline preload="none">
+                          <source src="/edm.mp4" type="video/mp4" />
+                        </video>
+                        <canvas class="live-icon-canvas" width="40" height="40"></canvas>
+                      </span>
+                      <span class="sr-only-live">מתנגן עכשיו</span>
+                    </p>
                   </div>
                 )}
                 {entry?.isBreak && (
-                  <div class="entry-break">
+                  <div class="entry-break" data-day={entry.day} data-time={entry.time} data-break="true">
                     <p class="break-label">הפסקה</p>
                     <p class="break-time">{entry.genre}</p>
                   </div>
@@ -90,16 +99,59 @@ const activeSlots = timeSlots.filter(slot =>
     background: rgba(255,255,255,0.07);
     border-color: rgba(0,229,255,0.2);
   }
+  .entry-card.is-live {
+    border-color: rgba(0,229,255,0.4);
+    box-shadow: 0 0 12px rgba(0,229,255,0.15);
+  }
   .entry-headliner {
     background: rgba(255,0,200,0.06);
     border-color: rgba(255,0,200,0.2);
   }
   .entry-name {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 0.875rem;
     color: white;
     margin-bottom: 0.2rem;
+  }
+  .live-icon {
+    display: inline-flex;
+    width: 1.8rem;
+    height: 1.8rem;
+    flex-shrink: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+  }
+  .live-icon-video {
+    display: none;
+  }
+  .live-icon-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .entry-card.is-live .live-icon {
+    opacity: 1;
+    visibility: visible;
+  }
+  .sr-only-live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    display: none;
+  }
+  .entry-card.is-live .sr-only-live {
+    display: block;
   }
   .entry-genre {
     font-size: 0.7rem;

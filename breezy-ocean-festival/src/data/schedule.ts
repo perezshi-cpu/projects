@@ -13,3 +13,16 @@ export const timeSlots = [
 export const scheduleData: Record<string, Artist[]> = Object.fromEntries(
   days.map(day => [day, artists.filter(a => a.day === day)])
 );
+
+// Maps each schedule "day" label to its real calendar date (Asia/Jerusalem wall-clock date),
+// used to build a chronologically-sortable key for the live "now playing" indicator.
+export const dayToISODate: Record<string, string> = {
+  'Sep 17': '2026-09-17',
+  'Sep 18': '2026-09-18',
+  'Sep 19': '2026-09-19',
+};
+
+// No schedule entry follows Captain Hook (Sep 19, 09:00), so this hardcoded boundary
+// (matching Information.astro's "סיום המוזיקה: ~13:00") bounds his live window and
+// marks when the "now playing" indicator disappears for good.
+export const festivalEnd = { day: 'Sep 19', time: '13:00' };

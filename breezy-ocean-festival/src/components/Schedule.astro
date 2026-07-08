@@ -62,6 +62,108 @@ import { dayLabels } from '../lib/hebrewLabels';
       });
     });
   });
+
+  // Live "now playing" indicator.
+  // TESTING MODE: ignores the real festival dates (Sep 17-19, 2026) and matches
+  // purely by time-of-day, independently within each day panel — so the indicator
+  // lights up right now using the real current time, in all three panels at once,
+  // instead of waiting for the actual event dates. Revert to real-date matching
+  // (see dayToISODate/festivalEnd in ../data/schedule) before the real event.
+  function getIsraelNowTimeKey(): string {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Jerusalem',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(new Date());
+
+    const get = (type: string) => parts.find(p => p.type === type)!.value;
+    let hour = get('hour');
+    if (hour === '24') hour = '00';
+    return `${hour}:${get('minute')}`;
+  }
+
+  // The turntable icon video has a solid near-white background baked into the
+  // footage itself, so recoloring it to black can't be done with CSS alone —
+  // each frame is drawn to a canvas and near-white pixels are rewritten to black,
+  // keeping the colorful turntable artwork intact.
+  const liveIconLoops = new WeakMap<HTMLVideoElement, number>();
+
+  function drawIconFrame(video: HTMLVideoElement, ctx: CanvasRenderingContext2D, size: number) {
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    if (!vw || !vh) return;
+
+    const side = Math.min(vw, vh);
+    const sx = (vw - side) / 2;
+    const sy = (vh - side) / 2;
+    ctx.drawImage(video, sx, sy, side, side, 0, 0, size, size);
+
+    const frame = ctx.getImageData(0, 0, size, size);
+    const d = frame.data;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i] > 200 && d[i + 1] > 200 && d[i + 2] > 200) {
+        d[i] = 0;
+        d[i + 1] = 0;
+        d[i + 2] = 0;
+      }
+    }
+    ctx.putImageData(frame, 0, 0);
+  }
+
+  function setLive(el: HTMLElement, isLive: boolean) {
+    el.classList.toggle('is-live', isLive);
+    const video = el.querySelector<HTMLVideoElement>('.live-icon-video');
+    const canvas = el.querySelector<HTMLCanvasElement>('.live-icon-canvas');
+    if (!video || !canvas) return;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    if (isLive) {
+      video.play().catch(() => {});
+      const loop = () => {
+        if (video.paused || video.ended) return;
+        drawIconFrame(video, ctx, canvas.width);
+        liveIconLoops.set(video, requestAnimationFrame(loop));
+      };
+      liveIconLoops.set(video, requestAnimationFrame(loop));
+    } else {
+      video.pause();
+      video.currentTime = 0;
+      const id = liveIconLoops.get(video);
+      if (id) cancelAnimationFrame(id);
+    }
+  }
+
+  function updateLiveIndicator() {
+    const nowTime = getIsraelNowTimeKey();
+
+    panels.forEach(panel => {
+      const rows = Array.from(panel.querySelectorAll<HTMLElement>('[data-day][data-time]'))
+        .map(el => ({ el, isBreak: el.hasAttribute('data-break'), time: el.dataset.time! }))
+        .sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+
+      let liveRow: (typeof rows)[number] | null = null;
+      for (let i = 0; i < rows.length; i++) {
+        const start = rows[i].time;
+        const end = i + 1 < rows.length ? rows[i + 1].time : '24:00';
+        if (start <= nowTime && nowTime < end) {
+          liveRow = rows[i];
+          break;
+        }
+      }
+
+      rows.forEach(row => {
+        const shouldBeLive = row === liveRow && !row.isBreak;
+        if (row.el.classList.contains('is-live') !== shouldBeLive) {
+          setLive(row.el, shouldBeLive);
+        }
+      });
+    });
+  }
+
+  updateLiveIndicator();
+  setInterval(updateLiveIndicator, 30_000);
 </script>
 
 <style>
