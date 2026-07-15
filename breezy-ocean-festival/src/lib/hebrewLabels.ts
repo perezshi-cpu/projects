@@ -5,5 +5,5 @@ export const dayLabels: Record<string, string> = {
 };
 
 export const stageLabels: Record<string, string> = {
-  'Main Stage': 'במה ראשית',
+  'Main Stage': 'רחבה',
 };
