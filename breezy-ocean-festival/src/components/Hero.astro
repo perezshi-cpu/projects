@@ -48,6 +48,29 @@
       היכן שהצליל פוגש את המדבר
     </p>
 
+    <!-- Countdown (mobile, in-flow) -->
+    <div id="countdown-mobile" class="countdown-inline">
+      <p class="countdown-label">עד תחילת המסע</p>
+      <div class="countdown-tiles">
+        <div class="card-glass countdown-tile">
+          <span class="countdown-value" data-unit="days">00</span>
+          <span class="countdown-unit">ימים</span>
+        </div>
+        <div class="card-glass countdown-tile">
+          <span class="countdown-value" data-unit="hours">00</span>
+          <span class="countdown-unit">שעות</span>
+        </div>
+        <div class="card-glass countdown-tile">
+          <span class="countdown-value" data-unit="minutes">00</span>
+          <span class="countdown-unit">דקות</span>
+        </div>
+        <div class="card-glass countdown-tile">
+          <span class="countdown-value" data-unit="seconds">00</span>
+          <span class="countdown-unit">שניות</span>
+        </div>
+      </div>
+    </div>
+
     <!-- CTA buttons -->
     <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
       <a href="#lineup" class="btn-ghost">לצפייה בסדר ההופעות</a>
@@ -95,27 +118,33 @@
   // once is correct and needs no ongoing DST-tracking logic.
   const COUNTDOWN_TARGET_MS = new Date('2026-09-17T17:00:00+03:00').getTime();
 
-  const countdownEl = document.getElementById('countdown');
+  const countdownEls = [document.getElementById('countdown'), document.getElementById('countdown-mobile')]
+    .filter((el): el is HTMLElement => el !== null);
+
   const valueEls = {
-    days: document.querySelector<HTMLElement>('[data-unit="days"]'),
-    hours: document.querySelector<HTMLElement>('[data-unit="hours"]'),
-    minutes: document.querySelector<HTMLElement>('[data-unit="minutes"]'),
-    seconds: document.querySelector<HTMLElement>('[data-unit="seconds"]'),
+    days: Array.from(document.querySelectorAll<HTMLElement>('[data-unit="days"]')),
+    hours: Array.from(document.querySelectorAll<HTMLElement>('[data-unit="hours"]')),
+    minutes: Array.from(document.querySelectorAll<HTMLElement>('[data-unit="minutes"]')),
+    seconds: Array.from(document.querySelectorAll<HTMLElement>('[data-unit="seconds"]')),
   };
 
   function pad(n: number): string {
     return String(n).padStart(2, '0');
   }
 
+  function setText(els: HTMLElement[], text: string) {
+    els.forEach(el => { el.textContent = text; });
+  }
+
   let countdownInterval: ReturnType<typeof setInterval> | undefined;
 
   function updateCountdown() {
-    if (!countdownEl) return;
+    if (countdownEls.length === 0) return;
 
     const remainingMs = COUNTDOWN_TARGET_MS - Date.now();
 
     if (remainingMs <= 0) {
-      countdownEl.style.display = 'none';
+      countdownEls.forEach(el => { el.style.display = 'none'; });
       if (countdownInterval !== undefined) {
         clearInterval(countdownInterval);
         countdownInterval = undefined;
@@ -129,10 +158,10 @@
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    if (valueEls.days) valueEls.days.textContent = pad(days);
-    if (valueEls.hours) valueEls.hours.textContent = pad(hours);
-    if (valueEls.minutes) valueEls.minutes.textContent = pad(minutes);
-    if (valueEls.seconds) valueEls.seconds.textContent = pad(seconds);
+    setText(valueEls.days, pad(days));
+    setText(valueEls.hours, pad(hours));
+    setText(valueEls.minutes, pad(minutes));
+    setText(valueEls.seconds, pad(seconds));
   }
 
   updateCountdown();
@@ -147,6 +176,9 @@
     z-index: 10;
     text-align: center;
     animation: fadeInUp 1s ease-out 0.3s both;
+  }
+  .countdown-inline {
+    display: none;
   }
   .countdown-label {
     font-family: var(--font-display);
@@ -188,25 +220,22 @@
     margin-top: 0.2rem;
   }
   @media (max-width: 640px) {
-    .countdown {
-      bottom: 0.75rem;
-      right: 0.75rem;
-    }
-    .countdown-label {
+    #countdown {
       display: none;
     }
-    .countdown-tiles {
-      gap: 0.25rem;
+    .countdown-inline {
+      display: block;
+      margin: 0 auto 2rem;
     }
-    .countdown-tile {
-      padding: 0.3rem 0.4rem;
-      min-width: 2.2rem;
+    .countdown-inline .countdown-tile {
+      padding: 0.5rem 0.7rem;
+      min-width: 3.5rem;
     }
-    .countdown-value {
-      font-size: 0.9rem;
+    .countdown-inline .countdown-value {
+      font-size: 1.3rem;
     }
-    .countdown-unit {
-      font-size: 0.5rem;
+    .countdown-inline .countdown-unit {
+      font-size: 0.6rem;
     }
   }
 </style>
