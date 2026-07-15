@@ -54,6 +54,29 @@
     </div>
   </div>
 
+  <!-- Countdown -->
+  <div id="countdown" class="countdown">
+    <p class="countdown-label">עד תחילת המוזיקה</p>
+    <div class="countdown-tiles">
+      <div class="card-glass countdown-tile">
+        <span class="countdown-value" data-unit="days">00</span>
+        <span class="countdown-unit">ימים</span>
+      </div>
+      <div class="card-glass countdown-tile">
+        <span class="countdown-value" data-unit="hours">00</span>
+        <span class="countdown-unit">שעות</span>
+      </div>
+      <div class="card-glass countdown-tile">
+        <span class="countdown-value" data-unit="minutes">00</span>
+        <span class="countdown-unit">דקות</span>
+      </div>
+      <div class="card-glass countdown-tile">
+        <span class="countdown-value" data-unit="seconds">00</span>
+        <span class="countdown-unit">שניות</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Scroll indicator -->
   <div style="position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.5rem;animation:fadeInUp 1s ease-out 0.5s both;">
     <span style="font-family:var(--font-display);font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);">גללו למטה</span>
@@ -63,4 +86,128 @@
     </svg>
   </div>
 </section>
+
+<script>
+  // Music starts Sep 17, 2026, 17:00 Asia/Jerusalem (IDT, UTC+3 in September 2026).
+  // Fixed one-time constant — unlike Schedule.astro's getIsraelNowTimeKey (which must
+  // repeatedly re-derive "current Israel wall-clock time" every tick to match against
+  // schedule slots), this target instant never changes, so baking in the +03:00 offset
+  // once is correct and needs no ongoing DST-tracking logic.
+  const COUNTDOWN_TARGET_MS = new Date('2026-09-17T17:00:00+03:00').getTime();
+
+  const countdownEl = document.getElementById('countdown');
+  const valueEls = {
+    days: document.querySelector<HTMLElement>('[data-unit="days"]'),
+    hours: document.querySelector<HTMLElement>('[data-unit="hours"]'),
+    minutes: document.querySelector<HTMLElement>('[data-unit="minutes"]'),
+    seconds: document.querySelector<HTMLElement>('[data-unit="seconds"]'),
+  };
+
+  function pad(n: number): string {
+    return String(n).padStart(2, '0');
+  }
+
+  let countdownInterval: ReturnType<typeof setInterval> | undefined;
+
+  function updateCountdown() {
+    if (!countdownEl) return;
+
+    const remainingMs = COUNTDOWN_TARGET_MS - Date.now();
+
+    if (remainingMs <= 0) {
+      countdownEl.style.display = 'none';
+      if (countdownInterval !== undefined) {
+        clearInterval(countdownInterval);
+        countdownInterval = undefined;
+      }
+      return;
+    }
+
+    const totalSeconds = Math.floor(remainingMs / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (valueEls.days) valueEls.days.textContent = pad(days);
+    if (valueEls.hours) valueEls.hours.textContent = pad(hours);
+    if (valueEls.minutes) valueEls.minutes.textContent = pad(minutes);
+    if (valueEls.seconds) valueEls.seconds.textContent = pad(seconds);
+  }
+
+  updateCountdown();
+  countdownInterval = setInterval(updateCountdown, 1000);
+</script>
+
+<style>
+  .countdown {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 10;
+    text-align: center;
+    animation: fadeInUp 1s ease-out 0.3s both;
+  }
+  .countdown-label {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 0.5rem;
+  }
+  .countdown-tiles {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  .countdown-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.55rem;
+    min-width: 2.75rem;
+  }
+  .countdown-value {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-cyan-neon);
+    animation: var(--animate-glow-pulse);
+    line-height: 1;
+  }
+  .countdown-unit {
+    font-family: var(--font-display);
+    font-size: 0.55rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 0.2rem;
+  }
+  @media (max-width: 640px) {
+    .countdown {
+      bottom: 0.75rem;
+      right: 0.75rem;
+    }
+    .countdown-label {
+      display: none;
+    }
+    .countdown-tiles {
+      gap: 0.25rem;
+    }
+    .countdown-tile {
+      padding: 0.3rem 0.4rem;
+      min-width: 2.2rem;
+    }
+    .countdown-value {
+      font-size: 0.9rem;
+    }
+    .countdown-unit {
+      font-size: 0.5rem;
+    }
+  }
+</style>
 
