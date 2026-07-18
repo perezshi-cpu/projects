@@ -3,7 +3,7 @@ import { artists } from '../data/artists';
 import ArtistCard from './ArtistCard.astro';
 import ArtistModal from './ArtistModal.astro';
 
-const performers = artists.filter(a => !a.isBreak && !a.scheduleOnly);
+const performers = artists.filter(a => !a.isBreak && !a.isEnd && !a.scheduleOnly);
 ---
 
 <section id="lineup" class="lineup-section" dir="rtl" lang="he">
