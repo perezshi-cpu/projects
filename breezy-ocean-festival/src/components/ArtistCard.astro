@@ -11,9 +11,11 @@ export interface Props {
   time: string;
   photo?: string;
   headliner?: boolean;
+  bio?: string;
+  videoUrl?: string;
 }
 
-const { name, origin, genre, day, stage, time, photo } = Astro.props;
+const { name, origin, genre, day, stage, time, photo, bio, videoUrl } = Astro.props;
 
 // Fallback gradient if no photo
 const { hue, hue2, initials } = getArtistFallback(name);
@@ -33,6 +35,8 @@ const { hue, hue2, initials } = getArtistFallback(name);
   data-genre={genre}
   data-origin={origin}
   data-photo={photo ?? ''}
+  data-bio={bio ?? ''}
+  data-video-url={videoUrl ?? ''}
 >
   <!-- Photo or gradient fallback -->
   <div class="card-img-wrap">
