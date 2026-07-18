@@ -140,7 +140,7 @@ import { dayLabels } from '../lib/hebrewLabels';
 
     panels.forEach(panel => {
       const rows = Array.from(panel.querySelectorAll<HTMLElement>('[data-day][data-time]'))
-        .map(el => ({ el, isBreak: el.hasAttribute('data-break'), time: el.dataset.time! }))
+        .map(el => ({ el, isBreak: el.hasAttribute('data-break') || el.hasAttribute('data-end'), time: el.dataset.time! }))
         .sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
 
       let liveRow: (typeof rows)[number] | null = null;

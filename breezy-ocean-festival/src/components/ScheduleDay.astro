@@ -30,7 +30,7 @@ const activeSlots = timeSlots.filter(slot =>
             <td class="time-cell">{slot}</td>
             {rowEntries.map(entry => (
               <td class="entry-cell">
-                {entry && !entry.isBreak && (
+                {entry && !entry.isBreak && !entry.isEnd && (
                   <div class="entry-card" data-day={entry.day} data-time={entry.time}>
                     <p class="entry-name">
                       <span class="entry-name-text">{entry.name}</span>
@@ -48,6 +48,12 @@ const activeSlots = timeSlots.filter(slot =>
                   <div class="entry-break" data-day={entry.day} data-time={entry.time} data-break="true">
                     <p class="break-label">הפסקה</p>
                     <p class="break-time">{entry.genre}</p>
+                  </div>
+                )}
+                {entry?.isEnd && (
+                  <div class="entry-end" data-day={entry.day} data-time={entry.time} data-end="true">
+                    <p class="end-label">סיום הפסטיבל</p>
+                    <p class="end-sub">תודה שהייתם איתנו 🌵</p>
                   </div>
                 )}
               </td>
@@ -175,5 +181,26 @@ const activeSlots = timeSlots.filter(slot =>
   .break-time {
     font-size: 0.7rem;
     color: rgba(255,215,0,0.4);
+  }
+  .entry-end {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, rgba(0,229,255,0.06), rgba(255,0,200,0.06));
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+  }
+  .end-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    background: linear-gradient(135deg, var(--color-cyan-neon), var(--color-magenta-neon));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.2rem;
+  }
+  .end-sub {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
   }
 </style>

@@ -6,7 +6,7 @@ export const stages = ['Main Stage'];
 // Midnight-first order: empty early slots are filtered per-day
 export const timeSlots = [
   '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00',
-  '09:00', '12:00',
+  '09:00', '12:00', '13:00',
   '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00',
 ];
 
