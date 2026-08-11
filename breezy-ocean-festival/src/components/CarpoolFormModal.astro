@@ -1,0 +1,362 @@
+<div id="carpool-form-overlay" class="carpool-form-modal-overlay modal-hidden">
+  <div
+    id="carpool-form-panel"
+    class="carpool-form-modal-panel card-glass"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="carpool-form-title"
+  >
+    <button id="carpool-form-close" class="carpool-form-modal-close" aria-label="סגור">&times;</button>
+
+    <h3 id="carpool-form-title" class="carpool-form-title">הרשמה לנסיעה משותפת</h3>
+
+    <div class="role-toggle" role="radiogroup" aria-label="סוג הרשמה">
+      <label class="role-toggle-btn" data-role="driver">
+        <input type="radio" name="role" value="driver" checked />
+        <span>נהג/ת</span>
+      </label>
+      <label class="role-toggle-btn" data-role="passenger">
+        <input type="radio" name="role" value="passenger" />
+        <span>נוסע/ת</span>
+      </label>
+    </div>
+
+    <form id="carpool-form" novalidate>
+      <div class="field">
+        <label for="carpool-name">שם</label>
+        <input id="carpool-name" name="name" type="text" required autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="carpool-phone">טלפון</label>
+        <input id="carpool-phone" name="phone" type="tel" required autocomplete="tel" placeholder="050-0000000" />
+      </div>
+
+      <fieldset id="driver-fields" class="role-fields">
+        <div class="field">
+          <label for="driver-city">עיר יציאה</label>
+          <input id="driver-city" name="driverCity" type="text" required />
+        </div>
+        <div class="field">
+          <label for="driver-seats">כמה מקומות פנויים?</label>
+          <select id="driver-seats" name="seats" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="driver-time">שעת יציאה</label>
+          <input id="driver-time" name="departureTime" type="text" required placeholder="לדוגמה: חמישי 18:00" />
+        </div>
+      </fieldset>
+
+      <fieldset id="passenger-fields" class="role-fields" hidden disabled>
+        <div class="field">
+          <label for="passenger-city">עיר</label>
+          <input id="passenger-city" name="passengerCity" type="text" required />
+        </div>
+        <div class="field">
+          <label for="passenger-count">כמה נוסעים?</label>
+          <select id="passenger-count" name="passengers" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <p id="carpool-form-status" class="carpool-form-status" aria-live="polite"></p>
+
+      <button id="carpool-form-submit" type="submit" class="btn-primary carpool-form-submit">שמירה</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  import { submitCarpoolEntry, isValidIsraeliPhone, type CarpoolSubmission } from '../lib/carpool';
+
+  const overlay = document.getElementById('carpool-form-overlay') as HTMLElement;
+  const closeBtn = document.getElementById('carpool-form-close') as HTMLButtonElement;
+  const trigger = document.querySelector<HTMLElement>('[data-carpool-form-trigger]');
+
+  const roleRadios = document.querySelectorAll<HTMLInputElement>('input[name="role"]');
+  const roleToggleBtns = document.querySelectorAll<HTMLElement>('.role-toggle-btn');
+  const driverFields = document.getElementById('driver-fields') as HTMLFieldSetElement;
+  const passengerFields = document.getElementById('passenger-fields') as HTMLFieldSetElement;
+
+  const form = document.getElementById('carpool-form') as HTMLFormElement;
+  const nameInput = document.getElementById('carpool-name') as HTMLInputElement;
+  const phoneInput = document.getElementById('carpool-phone') as HTMLInputElement;
+  const submitBtn = document.getElementById('carpool-form-submit') as HTMLButtonElement;
+  const statusEl = document.getElementById('carpool-form-status') as HTMLElement;
+
+  let lastFocused: HTMLElement | null = null;
+  let autoCloseTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  function setRole(role: 'driver' | 'passenger') {
+    const isDriver = role === 'driver';
+    driverFields.hidden = !isDriver;
+    driverFields.disabled = !isDriver;
+    passengerFields.hidden = isDriver;
+    passengerFields.disabled = isDriver;
+    roleToggleBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.role === role);
+    });
+  }
+
+  roleRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.checked) setRole(radio.value as 'driver' | 'passenger');
+    });
+  });
+
+  function resetStatus() {
+    statusEl.textContent = '';
+    statusEl.className = 'carpool-form-status';
+  }
+
+  function resetForm() {
+    form.reset();
+    setRole('driver');
+    resetStatus();
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'שמירה';
+  }
+
+  function openModal() {
+    lastFocused = document.activeElement as HTMLElement;
+    resetForm();
+    overlay.classList.remove('modal-hidden');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    if (autoCloseTimeout) {
+      clearTimeout(autoCloseTimeout);
+      autoCloseTimeout = null;
+    }
+    overlay.classList.add('modal-hidden');
+    document.body.style.overflow = '';
+    (lastFocused ?? trigger)?.focus();
+  }
+
+  trigger?.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+
+  overlay.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && !overlay.classList.contains('modal-hidden')) {
+      closeModal();
+    }
+  });
+
+  form.addEventListener('submit', async (e: SubmitEvent) => {
+    e.preventDefault();
+    resetStatus();
+
+    phoneInput.setCustomValidity(
+      isValidIsraeliPhone(phoneInput.value) ? '' : 'מספר טלפון לא תקין'
+    );
+
+    if (!form.reportValidity()) return;
+
+    const role = (document.querySelector<HTMLInputElement>('input[name="role"]:checked'))!.value as
+      | 'driver'
+      | 'passenger';
+
+    const submission: CarpoolSubmission =
+      role === 'driver'
+        ? {
+            type: 'driver',
+            name: nameInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            city: (document.getElementById('driver-city') as HTMLInputElement).value.trim(),
+            seats: Number((document.getElementById('driver-seats') as HTMLSelectElement).value),
+            departureTime: (document.getElementById('driver-time') as HTMLInputElement).value.trim(),
+          }
+        : {
+            type: 'passenger',
+            name: nameInput.value.trim(),
+            phone: phoneInput.value.trim(),
+            city: (document.getElementById('passenger-city') as HTMLInputElement).value.trim(),
+            passengers: Number((document.getElementById('passenger-count') as HTMLSelectElement).value),
+          };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'שומר...';
+
+    const result = await submitCarpoolEntry(submission);
+
+    if (result.ok) {
+      statusEl.textContent = '🎉 נרשמתם בהצלחה!';
+      statusEl.className = 'carpool-form-status status-success';
+      submitBtn.textContent = 'נשמר';
+      autoCloseTimeout = setTimeout(closeModal, 1500);
+    } else {
+      statusEl.textContent = result.error;
+      statusEl.className = 'carpool-form-status status-error';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'שמירה';
+    }
+  });
+</script>
+
+<style>
+  .carpool-form-modal-overlay.modal-hidden {
+    display: none;
+  }
+  .carpool-form-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .carpool-form-modal-panel {
+    position: relative;
+    width: 100%;
+    max-width: 26rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .carpool-form-modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .carpool-form-modal-close:hover,
+  .carpool-form-modal-close:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--color-cyan-neon);
+    outline: none;
+  }
+  .carpool-form-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 1.25rem;
+    padding-right: 2rem;
+  }
+  .role-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .role-toggle-btn {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.03);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .role-toggle-btn input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .role-toggle-btn[data-role='driver'].active {
+    border-color: var(--color-cyan-neon);
+    background: rgba(0, 229, 255, 0.12);
+    color: var(--color-cyan-neon);
+  }
+  .role-toggle-btn[data-role='passenger'].active {
+    border-color: var(--color-magenta-neon);
+    background: rgba(255, 0, 200, 0.12);
+    color: var(--color-magenta-neon);
+  }
+  .field {
+    margin-bottom: 1rem;
+  }
+  .field label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.35rem;
+  }
+  .field input,
+  .field select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+    color: white;
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+  }
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--color-cyan-neon);
+  }
+  .role-fields {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+  .role-fields[hidden] {
+    display: none;
+  }
+  .carpool-form-status {
+    min-height: 1.2rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+  .status-success {
+    color: var(--color-cyan-neon);
+  }
+  .status-error {
+    color: var(--color-magenta-neon);
+  }
+  .carpool-form-submit {
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.8rem;
+  }
+  .carpool-form-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+</style>

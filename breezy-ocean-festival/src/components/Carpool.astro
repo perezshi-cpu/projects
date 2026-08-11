@@ -1,4 +1,6 @@
 ---
+import CarpoolFormModal from './CarpoolFormModal.astro';
+import CarpoolListModal from './CarpoolListModal.astro';
 ---
 
 <section id="carpool" class="carpool-section" dir="rtl" lang="he">
@@ -21,10 +23,10 @@
         <div class="carpool-how">
           <h3 class="col-title">איך זה עובד</h3>
           <ol class="steps">
-            <li>פתחו את הקובץ דרך הכפתור למטה</li>
-            <li>הוסיפו שורה עם העיר, שעת היציאה, מספר המקומות הפנויים ודרך יצירת קשר — או עיינו בהצעות קיימות</li>
-            <li>תאמו ישירות מול שאר הנוסעים לפי הפרטים בקובץ</li>
-            <li>הפגשו בנקודת האיסוף שסוכמה ונסעו יחד למדבר</li>
+            <li>לחצו על "להירשם" ובחרו אם אתם נהג/ת או נוסע/ת</li>
+            <li>מלאו שם, טלפון ופרטי הנסיעה ולחצו "שמירה"</li>
+            <li>פתחו את "לוח נסיעות" כדי לראות נהגים ונוסעים אחרים</li>
+            <li>תאמו ישירות מול מי שמתאים לכם לפי הפרטים בלוח</li>
           </ol>
         </div>
 
@@ -33,12 +35,18 @@
 
       <!-- CTA -->
       <div class="carpool-cta">
-        <a href="https://docs.google.com/spreadsheets/d/1YvENPWgop4JHClfWzI6PruZuuJ2ZZvjB7Gs-fHhICdI/edit?usp=sharing" class="btn-primary carpool-btn" target="_blank" rel="noopener noreferrer">פתחו את הקובץ</a>
-        <p class="cta-note">לכולם יש הרשאת עריכה — פשוט הוסיפו שורה</p>
+        <div class="carpool-cta-buttons">
+          <button type="button" class="btn-primary carpool-btn" data-carpool-form-trigger>להירשם</button>
+          <button type="button" class="btn-ghost carpool-btn" data-carpool-list-trigger>לוח נסיעות</button>
+        </div>
+        <p class="cta-note">הפרטים שלכם יופיעו בלוח הנסיעות עבור משתתפי הפסטיבל האחרים</p>
       </div>
     </div>
 
   </div>
+
+  <CarpoolFormModal />
+  <CarpoolListModal />
 </section>
 
 <style>
@@ -132,7 +140,14 @@
     align-items: center;
     gap: 0.75rem;
   }
+  .carpool-cta-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
   .carpool-btn {
+    cursor: pointer;
     font-family: var(--font-display);
     font-size: 0.875rem;
     font-weight: 700;

@@ -1,0 +1,291 @@
+<div id="carpool-list-overlay" class="carpool-list-modal-overlay modal-hidden">
+  <div
+    id="carpool-list-panel"
+    class="carpool-list-modal-panel card-glass"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="carpool-list-title"
+  >
+    <button id="carpool-list-close" class="carpool-list-modal-close" aria-label="סגור">&times;</button>
+
+    <h3 id="carpool-list-title" class="carpool-list-title">לוח נסיעות</h3>
+
+    <div id="carpool-list-body" class="carpool-list-body"></div>
+  </div>
+</div>
+
+<script>
+  import { fetchCarpoolEntries, type CarpoolEntry } from '../lib/carpool';
+
+  const overlay = document.getElementById('carpool-list-overlay') as HTMLElement;
+  const closeBtn = document.getElementById('carpool-list-close') as HTMLButtonElement;
+  const trigger = document.querySelector<HTMLElement>('[data-carpool-list-trigger]');
+  const bodyEl = document.getElementById('carpool-list-body') as HTMLElement;
+
+  let lastFocused: HTMLElement | null = null;
+
+  function clearBody() {
+    bodyEl.replaceChildren();
+  }
+
+  function renderMessage(text: string, extra?: HTMLElement) {
+    clearBody();
+    const p = document.createElement('p');
+    p.className = 'carpool-list-message';
+    p.textContent = text;
+    bodyEl.appendChild(p);
+    if (extra) bodyEl.appendChild(extra);
+  }
+
+  function renderLoading() {
+    renderMessage('טוען נסיעות...');
+  }
+
+  function renderEmpty() {
+    renderMessage('עדיין אין נסיעות רשומות — היו הראשונים להירשם!');
+  }
+
+  function renderError(message: string) {
+    const retryBtn = document.createElement('button');
+    retryBtn.type = 'button';
+    retryBtn.className = 'btn-ghost carpool-list-retry';
+    retryBtn.textContent = 'נסו שוב';
+    retryBtn.addEventListener('click', loadEntries);
+    renderMessage(message, retryBtn);
+  }
+
+  function entryCard(entry: CarpoolEntry): HTMLElement {
+    const card = document.createElement('div');
+    card.className = `carpool-entry-card entry-${entry.type}`;
+
+    const badge = document.createElement('span');
+    badge.className = 'entry-badge';
+    badge.textContent = entry.type === 'driver' ? 'נהג/ת' : 'נוסע/ת';
+    card.appendChild(badge);
+
+    const name = document.createElement('p');
+    name.className = 'entry-name';
+    name.textContent = entry.name;
+    card.appendChild(name);
+
+    const details = document.createElement('div');
+    details.className = 'entry-details';
+
+    if (entry.phone) {
+      const phoneLink = document.createElement('a');
+      phoneLink.className = 'entry-phone';
+      phoneLink.href = `tel:${entry.phone}`;
+      phoneLink.textContent = entry.phone;
+      details.appendChild(phoneLink);
+    }
+
+    const line = document.createElement('p');
+    line.className = 'entry-line';
+    if (entry.type === 'driver') {
+      const bits = [
+        entry.city ? `יוצא/ת מ-${entry.city}` : '',
+        entry.departureTime ? `בשעה ${entry.departureTime}` : '',
+        entry.seats != null ? `${entry.seats} מקומות פנויים` : '',
+      ].filter(Boolean);
+      line.textContent = bits.join(' · ');
+    } else {
+      const bits = [
+        entry.city || '',
+        entry.passengers != null ? `${entry.passengers} נוסעים` : '',
+      ].filter(Boolean);
+      line.textContent = bits.join(' · ');
+    }
+    details.appendChild(line);
+
+    card.appendChild(details);
+    return card;
+  }
+
+  function renderList(entries: CarpoolEntry[]) {
+    if (entries.length === 0) {
+      renderEmpty();
+      return;
+    }
+    clearBody();
+    const list = document.createElement('div');
+    list.className = 'carpool-entry-list';
+    entries.forEach(entry => list.appendChild(entryCard(entry)));
+    bodyEl.appendChild(list);
+  }
+
+  async function loadEntries() {
+    renderLoading();
+    const result = await fetchCarpoolEntries();
+    if (result.ok) {
+      renderList(result.entries);
+    } else {
+      renderError(result.error);
+    }
+  }
+
+  function openModal() {
+    lastFocused = document.activeElement as HTMLElement;
+    overlay.classList.remove('modal-hidden');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+    loadEntries();
+  }
+
+  function closeModal() {
+    overlay.classList.add('modal-hidden');
+    document.body.style.overflow = '';
+    (lastFocused ?? trigger)?.focus();
+  }
+
+  trigger?.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+
+  overlay.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && !overlay.classList.contains('modal-hidden')) {
+      closeModal();
+    }
+  });
+</script>
+
+<style>
+  .carpool-list-modal-overlay.modal-hidden {
+    display: none;
+  }
+  .carpool-list-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .carpool-list-modal-panel {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .carpool-list-modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .carpool-list-modal-close:hover,
+  .carpool-list-modal-close:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--color-cyan-neon);
+    outline: none;
+  }
+  .carpool-list-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 1.25rem;
+    padding-right: 2rem;
+  }
+  /*
+   * Everything below targets elements built at runtime via
+   * document.createElement() in the <script> above (list items, messages,
+   * retry button). Astro only auto-scopes elements present in this file's
+   * static template, and drops/unscopes rules for classes it never sees
+   * there — so these must stay :global() or the list renders unstyled.
+   */
+  :global(.carpool-list-message) {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    padding: 1.5rem 0.5rem;
+  }
+  :global(.carpool-list-retry) {
+    display: block;
+    margin: 0 auto;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.5rem 1.5rem;
+  }
+  :global(.carpool-entry-list) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  :global(.carpool-entry-card) {
+    border-radius: 0.5rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-right: 3px solid transparent;
+  }
+  :global(.carpool-entry-card.entry-driver) {
+    border-right-color: var(--color-cyan-neon);
+  }
+  :global(.carpool-entry-card.entry-passenger) {
+    border-right-color: var(--color-magenta-neon);
+  }
+  :global(.entry-badge) {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    margin-bottom: 0.4rem;
+  }
+  :global(.entry-driver .entry-badge) {
+    color: var(--color-cyan-neon);
+    background: rgba(0, 229, 255, 0.12);
+  }
+  :global(.entry-passenger .entry-badge) {
+    color: var(--color-magenta-neon);
+    background: rgba(255, 0, 200, 0.12);
+  }
+  :global(.entry-name) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: white;
+    margin-bottom: 0.2rem;
+  }
+  :global(.entry-details) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  :global(.entry-phone) {
+    font-size: 0.8rem;
+    color: var(--color-gold-warm);
+    text-decoration: none;
+    width: fit-content;
+  }
+  :global(.entry-phone:hover) {
+    text-decoration: underline;
+  }
+  :global(.entry-line) {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+</style>
