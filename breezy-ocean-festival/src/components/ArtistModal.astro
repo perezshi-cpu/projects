@@ -6,7 +6,7 @@
     aria-modal="true"
     aria-labelledby="artist-modal-name"
   >
-    <button id="artist-modal-close" class="artist-modal-close" aria-label="סגור">&times;</button>
+    <button id="artist-modal-close" class="artist-modal-close" aria-label="סגור" style="background:#000000; color:#00e5ff; z-index:10;">&times;</button>
 
     <div id="artist-modal-media" class="artist-modal-media"></div>
 
@@ -130,13 +130,13 @@
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
-    width: 2rem;
-    height: 2rem;
+    width: 2.75rem;
+    height: 2.75rem;
     border-radius: 9999px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    font-size: 1.25rem;
+    border: 1px solid var(--color-cyan-neon);
+    background: #000000 !important;
+    color: var(--color-cyan-neon) !important;
+    font-size: 1.75rem;
     line-height: 1;
     cursor: pointer;
     display: flex;
