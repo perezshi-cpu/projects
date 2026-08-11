@@ -46,12 +46,13 @@ const { hue, hue2, initials } = getArtistFallback(name);
           <span class="card-initials" style={`color:hsl(${hue},80%,75%);`}>{initials}</span>
         </div>
     }
+    {!bio && <div class="card-photo-note">Info Coming Soon...</div>}
   </div>
 
   <!-- Card body -->
   <div class="card-body">
     <h3 class="card-name">{name}</h3>
-    <span class="meta-day">{dayLabels[day] ?? day}</span>
+    <span class="meta-day">{[dayLabels[day] ?? day, time].filter(Boolean).join(' · ')}</span>
   </div>
 </div>
 
@@ -94,6 +95,22 @@ const { hue, hue2, initials } = getArtistFallback(name);
     font-weight: 800;
     opacity: 0.7;
     user-select: none;
+  }
+  .card-photo-note {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.72);
+    color: var(--color-cyan-neon);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
   }
   .card-body {
     padding: 1rem;

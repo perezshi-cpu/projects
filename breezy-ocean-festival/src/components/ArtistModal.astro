@@ -13,23 +13,21 @@
     <div class="artist-modal-body">
       <h3 id="artist-modal-name" class="artist-modal-name"></h3>
       <p id="artist-modal-meta" class="artist-modal-meta"></p>
-      <p id="artist-modal-genre-origin" class="artist-modal-genre-origin"></p>
       <p id="artist-modal-bio" class="artist-modal-bio"></p>
-      <a id="artist-modal-link" class="artist-modal-link" target="_blank" rel="noopener noreferrer">🎧 צפו בסט המלא</a>
+      <a id="artist-modal-link" class="artist-modal-link" target="_blank" rel="noopener noreferrer">🎧 האזינו</a>
     </div>
   </div>
 </div>
 
 <script>
   import { getArtistFallback } from '../lib/artistFallback';
-  import { dayLabels, stageLabels } from '../lib/hebrewLabels';
+  import { dayLabels } from '../lib/hebrewLabels';
 
   const overlay = document.getElementById('artist-modal-overlay') as HTMLElement;
   const closeBtn = document.getElementById('artist-modal-close') as HTMLButtonElement;
   const mediaEl = document.getElementById('artist-modal-media') as HTMLElement;
   const nameEl = document.getElementById('artist-modal-name') as HTMLElement;
   const metaEl = document.getElementById('artist-modal-meta') as HTMLElement;
-  const genreOriginEl = document.getElementById('artist-modal-genre-origin') as HTMLElement;
   const bioEl = document.getElementById('artist-modal-bio') as HTMLElement;
   const linkEl = document.getElementById('artist-modal-link') as HTMLAnchorElement;
 
@@ -38,18 +36,14 @@
   let lastFocused: HTMLElement | null = null;
 
   function openModal(trigger: HTMLElement) {
-    const { name = '', day = '', stage = '', time = '', genre = '', origin = '', photo = '', bio = '', videoUrl = '' } = trigger.dataset;
+    const { name = '', day = '', time = '', photo = '', bio = '', videoUrl = '' } = trigger.dataset;
 
     lastFocused = trigger;
 
     nameEl.textContent = name;
-    metaEl.textContent = [dayLabels[day] ?? day, stageLabels[stage] ?? stage, time].filter(Boolean).join(' · ');
+    metaEl.textContent = [dayLabels[day] ?? day, time].filter(Boolean).join(' · ');
 
-    const genreOrigin = [genre, origin].filter(Boolean).join(' · ');
-    genreOriginEl.textContent = genreOrigin;
-    genreOriginEl.style.display = genreOrigin ? '' : 'none';
-
-    bioEl.textContent = bio || `הביוגרפיה המלאה תפורסם בקרוב. חזרו לבקר לעוד פרטים על הסאונד, הרקע והסיפור של ${name}.`;
+    bioEl.textContent = bio || 'Info Coming Soon...';
 
     if (videoUrl) {
       linkEl.href = videoUrl;
@@ -68,6 +62,10 @@
           <span class="artist-modal-initials" style="color:hsl(${hue},80%,75%);">${initials}</span>
         </div>
       `;
+    }
+
+    if (!bio) {
+      mediaEl.insertAdjacentHTML('beforeend', '<div class="artist-modal-photo-note">Info Coming Soon...</div>');
     }
 
     overlay.classList.remove('modal-hidden');
@@ -153,26 +151,43 @@
     outline: none;
   }
   .artist-modal-media {
+    position: relative;
     height: 12rem;
     border-radius: 0.75rem;
     overflow: hidden;
     margin-bottom: 1.25rem;
   }
-  .artist-modal-img {
+  :global(.artist-modal-photo-note) {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.72);
+    color: var(--color-cyan-neon);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
+  }
+  :global(.artist-modal-img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center top;
     display: block;
   }
-  .artist-modal-fallback {
+  :global(.artist-modal-fallback) {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .artist-modal-initials {
+  :global(.artist-modal-initials) {
     font-family: var(--font-display);
     font-size: 3rem;
     font-weight: 800;
@@ -195,15 +210,11 @@
     opacity: 0.9;
     margin-bottom: 0.5rem;
   }
-  .artist-modal-genre-origin {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 1rem;
-  }
   .artist-modal-bio {
     font-size: 0.9rem;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.75);
+    white-space: pre-line;
   }
   .artist-modal-link {
     display: none;
