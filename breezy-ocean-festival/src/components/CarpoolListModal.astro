@@ -101,16 +101,40 @@
     return card;
   }
 
+  function entrySection(title: string, type: 'driver' | 'passenger', entries: CarpoolEntry[]): HTMLElement {
+    const section = document.createElement('div');
+    section.className = 'carpool-entry-section';
+
+    const heading = document.createElement('h4');
+    heading.className = `carpool-section-title section-${type}`;
+    heading.textContent = title;
+    section.appendChild(heading);
+
+    if (entries.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'carpool-section-empty';
+      empty.textContent = type === 'driver' ? 'אין עדיין נהגים רשומים' : 'אין עדיין נוסעים רשומים';
+      section.appendChild(empty);
+    } else {
+      const list = document.createElement('div');
+      list.className = 'carpool-entry-list';
+      entries.forEach(entry => list.appendChild(entryCard(entry)));
+      section.appendChild(list);
+    }
+
+    return section;
+  }
+
   function renderList(entries: CarpoolEntry[]) {
     if (entries.length === 0) {
       renderEmpty();
       return;
     }
     clearBody();
-    const list = document.createElement('div');
-    list.className = 'carpool-entry-list';
-    entries.forEach(entry => list.appendChild(entryCard(entry)));
-    bodyEl.appendChild(list);
+    const drivers = entries.filter(e => e.type === 'driver');
+    const passengers = entries.filter(e => e.type === 'passenger');
+    bodyEl.appendChild(entrySection('🚗 נהגים', 'driver', drivers));
+    bodyEl.appendChild(entrySection('🧍 נוסעים', 'passenger', passengers));
   }
 
   async function loadEntries() {
@@ -227,6 +251,30 @@
     font-size: 0.8rem;
     font-weight: 700;
     padding: 0.5rem 1.5rem;
+  }
+  :global(.carpool-entry-section) {
+    margin-bottom: 1.5rem;
+  }
+  :global(.carpool-entry-section:last-child) {
+    margin-bottom: 0;
+  }
+  :global(.carpool-section-title) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.75rem;
+  }
+  :global(.carpool-section-title.section-driver) {
+    color: var(--color-cyan-neon);
+  }
+  :global(.carpool-section-title.section-passenger) {
+    color: var(--color-magenta-neon);
+  }
+  :global(.carpool-section-empty) {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 0.5rem 0;
   }
   :global(.carpool-entry-list) {
     display: flex;
