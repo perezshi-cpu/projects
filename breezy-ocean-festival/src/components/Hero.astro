@@ -43,14 +43,9 @@
       <span style="display:block;font-size:clamp(1.25rem,3vw,2rem);font-weight:500;color:rgba(255,255,255,0.5);letter-spacing:0.3em;margin-top:0.5rem;">FESTIVAL</span>
     </h1>
 
-    <!-- Tagline -->
-    <p style="font-family:var(--font-body);font-size:clamp(1rem,2vw,1.25rem);color:rgba(255,255,255,0.6);margin-bottom:2.5rem;max-width:36rem;margin-left:auto;margin-right:auto;">
-      היכן שהצליל פוגש את המדבר
-    </p>
 
     <!-- Countdown (mobile, in-flow) -->
     <div id="countdown-mobile" class="countdown-inline">
-      <p class="countdown-label">עד תחילת המסע</p>
       <div class="countdown-tiles">
         <div class="card-glass countdown-tile">
           <span class="countdown-value" data-unit="days">00</span>
@@ -72,14 +67,14 @@
     </div>
 
     <!-- CTA buttons -->
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-      <a href="#lineup" class="btn-ghost">לצפייה בהופעות</a>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+      <a href="#lineup" class="btn-ghost">תוכניה</a>
+      <span aria-hidden="true" style="font-size:2.5rem;line-height:1;color:var(--color-cyan-neon);">↓</span>
     </div>
   </div>
 
   <!-- Countdown -->
   <div id="countdown" class="countdown">
-    <p class="countdown-label">עד תחילת המסע</p>
     <div class="countdown-tiles">
       <div class="card-glass countdown-tile">
         <span class="countdown-value" data-unit="days">00</span>
