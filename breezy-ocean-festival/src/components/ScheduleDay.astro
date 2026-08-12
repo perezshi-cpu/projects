@@ -85,6 +85,12 @@ const activeSlots = timeSlots.filter(slot =>
     width: auto;
     min-width: 400px;
     margin: 0 auto;
+    /* The time column (5rem) only exists on one side of the table, which
+       pulls the artist column's own visual center off from the table's
+       (and page's) true center by half the time column's width. Shifting
+       the whole table right by that amount re-centers the artist column
+       under the page-centered section title. */
+    transform: translateX(2.5rem);
     border-collapse: collapse;
   }
   th {

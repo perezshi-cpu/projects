@@ -27,6 +27,7 @@ import CarpoolListModal from './CarpoolListModal.astro';
             <li>מלאו שם, טלפון ופרטי הנסיעה ולחצו "שמירה"</li>
             <li>פתחו את "לוח נסיעות" כדי לראות נהגים וטרמפיסטים.יות אחרים.ות</li>
             <li>תאמו ישירות מול מי שמתאים לכם לפי הפרטים בלוח</li>
+            <li>במידה ותרצו להסיר את עצמכם מהרשימה צרו קשר עם מתן</li>
           </ol>
         </div>
 
@@ -88,6 +89,9 @@ import CarpoolListModal from './CarpoolListModal.astro';
   .carpool-cols {
     display: block;
   }
+  .carpool-how {
+    text-align: center;
+  }
   .col-title {
     font-family: var(--font-display);
     font-size: 0.8rem;
@@ -101,7 +105,8 @@ import CarpoolListModal from './CarpoolListModal.astro';
   .steps {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 auto;
+    max-width: 28rem;
     counter-reset: steps;
     display: flex;
     flex-direction: column;
@@ -114,6 +119,7 @@ import CarpoolListModal from './CarpoolListModal.astro';
     font-size: 0.85rem;
     color: rgba(255,255,255,0.6);
     line-height: 1.5;
+    text-align: right;
   }
   .steps li::before {
     content: counter(steps);
