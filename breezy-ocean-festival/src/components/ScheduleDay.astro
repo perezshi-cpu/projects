@@ -83,15 +83,24 @@ const activeSlots = timeSlots.filter(slot =>
   .schedule-table-wrap { overflow-x: auto; }
   .schedule-table {
     width: auto;
-    min-width: 400px;
+    max-width: 100%;
     margin: 0 auto;
-    /* The time column (5rem) only exists on one side of the table, which
-       pulls the artist column's own visual center off from the table's
-       (and page's) true center by half the time column's width. Shifting
-       the whole table right by that amount re-centers the artist column
-       under the page-centered section title. */
-    transform: translateX(2.5rem);
     border-collapse: collapse;
+  }
+  @media (min-width: 641px) {
+    .schedule-table {
+      min-width: 400px;
+      /* The time column (5rem) only exists on one side of the table, which
+         pulls the artist column's own visual center off from the table's
+         (and page's) true center by half the time column's width. Shifting
+         the whole table right by that amount re-centers the artist column
+         under the page-centered section title. Desktop-only: on narrow
+         mobile viewports this pushed the time column off-screen. */
+      transform: translateX(2.5rem);
+    }
+    .entry-card {
+      width: 22rem;
+    }
   }
   th {
     padding: 0.75rem 1rem;
@@ -116,7 +125,13 @@ const activeSlots = timeSlots.filter(slot =>
   .entry-cell { padding: 0.5rem; text-align: center; }
   .entry-card {
     display: block;
-    width: 22rem;
+    /* A fixed rem width (not just max-width:100%) is needed here: in the
+       browser's table auto-layout algorithm, a descendant's explicit width
+       feeds into the column's own minimum-width calculation regardless of
+       max-width, so a wide value here forces the whole table wider than the
+       viewport on mobile. Kept narrow by default and widened on larger
+       screens where there's room. */
+    width: 14rem;
     max-width: 100%;
     box-sizing: border-box;
     margin: 0 auto;
