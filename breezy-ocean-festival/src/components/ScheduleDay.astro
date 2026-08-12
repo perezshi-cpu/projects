@@ -31,7 +31,21 @@ const activeSlots = timeSlots.filter(slot =>
             {rowEntries.map(entry => (
               <td class="entry-cell">
                 {entry && !entry.isBreak && !entry.isEnd && (
-                  <div class="entry-card" data-day={entry.day} data-time={entry.time}>
+                  <div
+                    class="entry-card"
+                    role="button"
+                    tabindex="0"
+                    aria-haspopup="dialog"
+                    aria-label={`צפו במידע על ${entry.name}`}
+                    data-artist-trigger
+                    data-name={entry.name}
+                    data-day={entry.day}
+                    data-time={entry.time}
+                    data-photo={entry.photo ?? ''}
+                    data-photo-position={entry.photoPosition ?? ''}
+                    data-bio={entry.bio ?? ''}
+                    data-video-url={entry.videoUrl ?? ''}
+                  >
                     <p class="entry-name">
                       <span class="entry-name-text">{entry.name}</span>
                       <span class="live-icon" aria-hidden="true">
@@ -68,13 +82,14 @@ const activeSlots = timeSlots.filter(slot =>
 <style>
   .schedule-table-wrap { overflow-x: auto; }
   .schedule-table {
-    width: 100%;
+    width: auto;
     min-width: 400px;
+    margin: 0 auto;
     border-collapse: collapse;
   }
   th {
     padding: 0.75rem 1rem;
-    text-align: start;
+    text-align: center;
     font-family: var(--font-display);
     font-size: 0.8rem;
     font-weight: 600;
@@ -86,20 +101,29 @@ const activeSlots = timeSlots.filter(slot =>
   .schedule-row { border-top: 1px solid rgba(255,255,255,0.05); }
   .time-cell {
     padding-block: 0.75rem;
-    padding-inline-end: 1rem;
-    padding-inline-start: 0;
+    text-align: center;
     font-family: monospace;
     font-size: 0.75rem;
     color: var(--color-cyan-neon);
     white-space: nowrap;
   }
-  .entry-cell { padding: 0.5rem; }
+  .entry-cell { padding: 0.5rem; text-align: center; }
   .entry-card {
-    padding: 0.75rem;
+    display: block;
+    width: 22rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 1.15rem;
     border-radius: 0.5rem;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
     transition: all 0.2s;
+    cursor: pointer;
+  }
+  .entry-card:focus-visible {
+    outline: 2px solid var(--color-cyan-neon);
+    outline-offset: 2px;
   }
   .entry-card:hover {
     background: rgba(255,255,255,0.07);
@@ -116,6 +140,7 @@ const activeSlots = timeSlots.filter(slot =>
   .entry-name {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.35rem;
     font-family: var(--font-display);
     font-weight: 700;

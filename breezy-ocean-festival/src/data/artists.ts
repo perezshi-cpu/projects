@@ -7,6 +7,7 @@ export interface Artist {
   stage: string;
   time: string;
   photo?: string;
+  photoPosition?: string;
   headliner?: boolean;
   isBreak?: boolean;
   isEnd?: boolean;
@@ -31,7 +32,7 @@ const aceVenturaVideoUrl = 'https://youtu.be/30E8Hsb8dyQ?si=KsIGQQUAEqG5zku8';
 export const artists: Artist[] = [
   // Sep 17
   {
-    id: '01', name: 'ArtMis',       origin: 'ישראל', genre: 'פסיטראנס', day: 'Sep 17', stage: 'Main Stage', time: '17:00', photo: '/artists/artmis.jpg',
+    id: '01', name: 'ArtMis',       origin: 'ישראל', genre: 'פסיטראנס', day: 'Sep 17', stage: 'Main Stage', time: '17:00', photo: '/artists/artmis.jpg', photoPosition: 'center 32%',
     bio: `ארטמיס (דר גזית) היא מהשמות הכי מרעננים בגל החדש של הסצנה המקומית. המוזיקה של דר היא שילוב של ישן וחדש שבאה לידי ביטוי במלודיות גואה אסיד, שארוזים בהפקה עדכנית עם קיק בס דוחף ופאנצ'י.
 
 הטראקים שלה פסיכדליים ורפטטיביים ולוקחים את הקהל ברחבה למסעות עמוקים. בשנה האחרונה היא שחררה כמה טראקים מעולים שיצא לי לנגן ועבדו מעולה ברחבה.

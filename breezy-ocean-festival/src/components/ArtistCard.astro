@@ -10,12 +10,13 @@ export interface Props {
   stage: string;
   time: string;
   photo?: string;
+  photoPosition?: string;
   headliner?: boolean;
   bio?: string;
   videoUrl?: string;
 }
 
-const { name, origin, genre, day, stage, time, photo, bio, videoUrl } = Astro.props;
+const { name, origin, genre, day, stage, time, photo, photoPosition, bio, videoUrl } = Astro.props;
 
 // Fallback gradient if no photo
 const { hue, hue2, initials } = getArtistFallback(name);
@@ -35,13 +36,14 @@ const { hue, hue2, initials } = getArtistFallback(name);
   data-genre={genre}
   data-origin={origin}
   data-photo={photo ?? ''}
+  data-photo-position={photoPosition ?? ''}
   data-bio={bio ?? ''}
   data-video-url={videoUrl ?? ''}
 >
   <!-- Photo or gradient fallback -->
   <div class="card-img-wrap">
     {photo
-      ? <img src={photo} alt={name} class="card-img" />
+      ? <img src={photo} alt={name} class="card-img" style={photoPosition ? `object-position:${photoPosition};` : undefined} />
       : <div class="card-img-fallback" style={`background:conic-gradient(from 180deg at 50% 60%, hsl(${hue},70%,30%), hsl(${hue2},60%,20%), hsl(${hue},80%,15%));`}>
           <span class="card-initials" style={`color:hsl(${hue},80%,75%);`}>{initials}</span>
         </div>
@@ -114,6 +116,7 @@ const { hue, hue2, initials } = getArtistFallback(name);
   }
   .card-body {
     padding: 1rem;
+    text-align: center;
   }
   .card-name {
     font-family: var(--font-display);

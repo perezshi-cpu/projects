@@ -36,7 +36,7 @@
   let lastFocused: HTMLElement | null = null;
 
   function openModal(trigger: HTMLElement) {
-    const { name = '', day = '', time = '', photo = '', bio = '', videoUrl = '' } = trigger.dataset;
+    const { name = '', day = '', time = '', photo = '', photoPosition = '', bio = '', videoUrl = '' } = trigger.dataset;
 
     lastFocused = trigger;
 
@@ -54,7 +54,8 @@
     }
 
     if (photo) {
-      mediaEl.innerHTML = `<img src="${photo}" alt="${name}" class="artist-modal-img" />`;
+      const posStyle = photoPosition ? ` style="object-position:${photoPosition};"` : '';
+      mediaEl.innerHTML = `<img src="${photo}" alt="${name}" class="artist-modal-img"${posStyle} />`;
     } else {
       const { hue, hue2, initials } = getArtistFallback(name);
       mediaEl.innerHTML = `
@@ -200,7 +201,7 @@
     font-size: 1.5rem;
     color: white;
     margin-bottom: 0.35rem;
-    padding-right: 2rem;
+    text-align: center;
   }
   .artist-modal-meta {
     font-size: 0.8rem;
@@ -209,6 +210,7 @@
     color: var(--color-gold-warm);
     opacity: 0.9;
     margin-bottom: 0.5rem;
+    text-align: center;
   }
   .artist-modal-bio {
     font-size: 0.9rem;
