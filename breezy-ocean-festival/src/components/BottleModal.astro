@@ -1,0 +1,238 @@
+<div id="bottle-modal-overlay" class="bottle-modal-overlay modal-hidden">
+  <div
+    id="bottle-modal-panel"
+    class="bottle-modal-panel card-glass"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="bottle-modal-title"
+  >
+    <button id="bottle-modal-close" class="bottle-modal-close" aria-label="סגור" style="background:#000000; color:#00e5ff; z-index:10;">&times;</button>
+
+    <h3 id="bottle-modal-title" class="bottle-modal-title">מה כתוב לי על הבקבוק?</h3>
+    <p class="bottle-modal-intro">הזינו את מספר הטלפון שלכם כדי לגלות את ההודעה שמחכה לכם. לא מצאתם את השם שלכם ? תתקשרו אלי.</p>
+
+    <form id="bottle-form" novalidate>
+      <div class="field">
+        <label for="bottle-phone">טלפון</label>
+        <input id="bottle-phone" name="phone" type="tel" required autocomplete="tel" placeholder="050-0000000" />
+      </div>
+      <button id="bottle-form-submit" type="submit" class="btn-primary bottle-form-submit">חיפוש</button>
+    </form>
+
+    <div id="bottle-result" class="bottle-result" aria-live="polite" hidden></div>
+  </div>
+</div>
+
+<script>
+  import { lookupBottleName, isValidPhone } from '../lib/bottle';
+
+  const overlay = document.getElementById('bottle-modal-overlay') as HTMLElement;
+  const closeBtn = document.getElementById('bottle-modal-close') as HTMLButtonElement;
+  const trigger = document.querySelector<HTMLElement>('[data-bottle-trigger]');
+
+  const form = document.getElementById('bottle-form') as HTMLFormElement;
+  const phoneInput = document.getElementById('bottle-phone') as HTMLInputElement;
+  const submitBtn = document.getElementById('bottle-form-submit') as HTMLButtonElement;
+  const resultEl = document.getElementById('bottle-result') as HTMLElement;
+
+  let lastFocused: HTMLElement | null = null;
+
+  function resetResult() {
+    resultEl.hidden = true;
+    resultEl.textContent = '';
+    resultEl.className = 'bottle-result';
+  }
+
+  function resetForm() {
+    form.reset();
+    resetResult();
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'חיפוש';
+  }
+
+  function openModal() {
+    lastFocused = document.activeElement as HTMLElement;
+    resetForm();
+    overlay.classList.remove('modal-hidden');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    overlay.classList.add('modal-hidden');
+    document.body.style.overflow = '';
+    (lastFocused ?? trigger)?.focus();
+  }
+
+  trigger?.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+
+  overlay.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && !overlay.classList.contains('modal-hidden')) {
+      closeModal();
+    }
+  });
+
+  form.addEventListener('submit', async (e: SubmitEvent) => {
+    e.preventDefault();
+    resetResult();
+
+    phoneInput.setCustomValidity(
+      isValidPhone(phoneInput.value) ? '' : 'מספר טלפון לא תקין'
+    );
+    if (!form.reportValidity()) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'מחפש...';
+
+    const result = await lookupBottleName(phoneInput.value.trim());
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'חיפוש';
+
+    resultEl.hidden = false;
+    if (result.ok && result.found) {
+      resultEl.textContent = `השם שלך על הבקבוק הוא: ${result.name}`;
+      resultEl.className = 'bottle-result status-found';
+    } else if (result.ok && !result.found) {
+      resultEl.textContent = 'לא מצאנו שם עבור המספר הזה.';
+      resultEl.className = 'bottle-result status-not-found';
+    } else {
+      resultEl.textContent = result.error;
+      resultEl.className = 'bottle-result status-error';
+    }
+  });
+</script>
+
+<style>
+  .bottle-modal-overlay.modal-hidden {
+    display: none;
+  }
+  .bottle-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .bottle-modal-panel {
+    position: relative;
+    width: 100%;
+    max-width: 26rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  .bottle-modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-cyan-neon);
+    background: #000000 !important;
+    color: var(--color-cyan-neon) !important;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .bottle-modal-close:hover,
+  .bottle-modal-close:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--color-cyan-neon);
+    outline: none;
+  }
+  .bottle-modal-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    text-align: center;
+  }
+  .bottle-modal-intro {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1.25rem;
+    text-align: center;
+  }
+  .field {
+    margin-bottom: 1rem;
+  }
+  .field label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.35rem;
+  }
+  .field input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+    color: white;
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--color-cyan-neon);
+  }
+  .bottle-form-submit {
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.8rem;
+  }
+  .bottle-form-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .bottle-result {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .bottle-result[hidden] {
+    display: none;
+  }
+  .status-found {
+    border: 1px solid rgba(0, 229, 255, 0.35);
+    background: rgba(0, 229, 255, 0.08);
+    color: var(--color-cyan-neon);
+    font-weight: 600;
+  }
+  .status-not-found {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .status-error {
+    border: 1px solid rgba(255, 0, 200, 0.3);
+    background: rgba(255, 0, 200, 0.06);
+    color: var(--color-magenta-neon);
+  }
+</style>

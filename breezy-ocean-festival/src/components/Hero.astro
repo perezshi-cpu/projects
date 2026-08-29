@@ -1,4 +1,5 @@
 ---
+import BottleModal from './BottleModal.astro';
 ---
 <section
   id="hero"
@@ -68,7 +69,10 @@
 
     <!-- CTA buttons -->
     <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
-      <a href="#lineup" class="btn-ghost">תוכניה</a>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0.75rem;">
+        <a href="#lineup" class="btn-ghost">תוכניה</a>
+        <button type="button" class="btn-ghost" data-bottle-trigger>מה כתוב לי על הבקבוק ?</button>
+      </div>
       <span aria-hidden="true" style="font-size:2.5rem;line-height:1;color:var(--color-cyan-neon);">↓</span>
     </div>
   </div>
@@ -103,6 +107,8 @@
       <rect x="5" y="0" width="6" height="16" rx="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
     </svg>
   </div>
+
+  <BottleModal />
 </section>
 
 <script>
