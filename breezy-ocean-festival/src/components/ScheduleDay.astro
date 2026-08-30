@@ -30,7 +30,7 @@ const activeSlots = timeSlots.filter(slot =>
             <td class="time-cell">{slot}</td>
             {rowEntries.map(entry => (
               <td class="entry-cell">
-                {entry && !entry.isBreak && !entry.isEnd && (
+                {entry && !entry.isBreak && !entry.isEnd && !entry.isNote && (
                   <div
                     class="entry-card"
                     role="button"
@@ -68,6 +68,11 @@ const activeSlots = timeSlots.filter(slot =>
                   <div class="entry-end" data-day={entry.day} data-time={entry.time} data-end="true">
                     <p class="end-label">סיום הפסטיבל</p>
                     <p class="end-sub">תודה שהייתם איתנו 🌵</p>
+                  </div>
+                )}
+                {entry?.isNote && (
+                  <div class="entry-note" data-day={entry.day} data-time={entry.time} data-note="true">
+                    <p class="note-label">{entry.name}</p>
                   </div>
                 )}
               </td>
@@ -248,5 +253,19 @@ const activeSlots = timeSlots.filter(slot =>
   .end-sub {
     font-size: 0.7rem;
     color: rgba(255,255,255,0.4);
+  }
+  .entry-note {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(255,215,0,0.04);
+    border: 1px dashed rgba(255,215,0,0.2);
+    text-align: center;
+  }
+  .note-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--color-gold-warm);
+    opacity: 0.7;
   }
 </style>

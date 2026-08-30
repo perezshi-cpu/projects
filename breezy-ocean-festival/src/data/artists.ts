@@ -11,6 +11,7 @@ export interface Artist {
   headliner?: boolean;
   isBreak?: boolean;
   isEnd?: boolean;
+  isNote?: boolean;
   scheduleOnly?: boolean;
   bio?: string;
   videoUrl?: string;
@@ -31,6 +32,7 @@ const aceVenturaVideoUrl = 'https://youtu.be/30E8Hsb8dyQ?si=KsIGQQUAEqG5zku8';
 
 export const artists: Artist[] = [
   // Sep 17
+  { id: '00', name: 'פתיחת שערים', origin: '', genre: '', day: 'Sep 17', stage: 'Main Stage', time: '14:00', isNote: true },
   {
     id: '01', name: 'ArtMis',       origin: 'ישראל', genre: 'פסיטראנס', day: 'Sep 17', stage: 'Main Stage', time: '17:00', photo: '/artists/artmis.jpg', photoPosition: 'center 32%',
     bio: `ארטמיס (דר גזית) היא מהשמות הכי מרעננים בגל החדש של הסצנה המקומית. המוזיקה של דר היא שילוב של ישן וחדש שבאה לידי ביטוי במלודיות גואה אסיד, שארוזים בהפקה עדכנית עם קיק בס דוחף ופאנצ'י.
@@ -143,4 +145,5 @@ export const artists: Artist[] = [
     videoUrl: 'https://www.youtube.com/watch?v=QrsQBiE1q_A',
   },
   { id: '20', name: 'Festival End', origin: '', genre: '', day: 'Sep 19', stage: 'Main Stage', time: '13:00', isEnd: true },
+  { id: '21', name: 'עזיבת המתחם', origin: '', genre: '', day: 'Sep 19', stage: 'Main Stage', time: '16:00', isNote: true },
 ];

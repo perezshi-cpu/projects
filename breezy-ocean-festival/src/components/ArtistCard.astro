@@ -1,6 +1,5 @@
 ---
 import { getArtistFallback } from '../lib/artistFallback';
-import { dayLabels } from '../lib/hebrewLabels';
 
 export interface Props {
   name: string;
@@ -54,7 +53,6 @@ const { hue, hue2, initials } = getArtistFallback(name);
   <!-- Card body -->
   <div class="card-body">
     <h3 class="card-name">{name}</h3>
-    <span class="meta-day">{[dayLabels[day] ?? day, time].filter(Boolean).join(' · ')}</span>
   </div>
 </div>
 
@@ -125,5 +123,4 @@ const { hue, hue2, initials } = getArtistFallback(name);
     color: white;
     margin-bottom: 0.25rem;
   }
-  .meta-day { font-size: 0.65rem; font-family: var(--font-display); font-weight: 600; color: var(--color-gold-warm); opacity: 0.8; }
 </style>

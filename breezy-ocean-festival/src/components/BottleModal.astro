@@ -96,7 +96,12 @@
 
     resultEl.hidden = false;
     if (result.ok && result.found) {
-      resultEl.textContent = `השם שלך על הבקבוק הוא: ${result.name}`;
+      resultEl.replaceChildren();
+      resultEl.append('השם שלך על הבקבוק הוא: ');
+      const nameEl = document.createElement('span');
+      nameEl.dir = 'ltr';
+      nameEl.textContent = result.name;
+      resultEl.append(nameEl);
       resultEl.className = 'bottle-result status-found';
     } else if (result.ok && !result.found) {
       resultEl.textContent = 'לא מצאנו שם עבור המספר הזה.';
