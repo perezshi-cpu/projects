@@ -16,6 +16,14 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
 <html lang="en">
   <head>
     <script is:inline>
+      // Mobile browsers restore the scroll offset a tab had before a plain
+      // reload (not just back/forward) — so scrolling to Lineup, opening an
+      // artist, then refreshing reopens mid-page instead of at the Hero.
+      // Opting out here makes every load start at the top by default.
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+
       // In-page nav links (nav bar, "תוכניה" CTA) point at #lineup etc.
       // Once clicked, that hash sits in the address bar and gets copied
       // along when someone shares the URL — so every fresh visitor who
