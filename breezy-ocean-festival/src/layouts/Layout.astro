@@ -15,6 +15,18 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 <html lang="en">
   <head>
+    <script is:inline>
+      // In-page nav links (nav bar, "תוכניה" CTA) point at #lineup etc.
+      // Once clicked, that hash sits in the address bar and gets copied
+      // along when someone shares the URL — so every fresh visitor who
+      // opens that shared link lands mid-page instead of at the Hero.
+      // Stripping the hash before the browser's native fragment-scroll
+      // runs keeps first loads always starting at the top; in-page nav
+      // clicks still work normally since those set the hash fresh.
+      if (location.hash) {
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0a0a0f" />
