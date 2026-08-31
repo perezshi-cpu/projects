@@ -43,7 +43,13 @@
     nameEl.textContent = name;
     metaEl.textContent = [dayLabels[day] ?? day, time].filter(Boolean).join(' · ');
 
-    bioEl.textContent = bio || 'Info Coming Soon...';
+    if (bio) {
+      bioEl.removeAttribute('dir');
+      bioEl.textContent = bio;
+    } else {
+      bioEl.dir = 'ltr';
+      bioEl.textContent = 'Info Coming Soon...';
+    }
 
     if (videoUrl) {
       linkEl.href = videoUrl;
@@ -66,7 +72,7 @@
     }
 
     if (!bio) {
-      mediaEl.insertAdjacentHTML('beforeend', '<div class="artist-modal-photo-note">Info Coming Soon...</div>');
+      mediaEl.insertAdjacentHTML('beforeend', '<div class="artist-modal-photo-note" dir="ltr">Info Coming Soon...</div>');
     }
 
     overlay.classList.remove('modal-hidden');

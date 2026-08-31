@@ -47,7 +47,7 @@ const { hue, hue2, initials } = getArtistFallback(name);
           <span class="card-initials" style={`color:hsl(${hue},80%,75%);`}>{initials}</span>
         </div>
     }
-    {!bio && <div class="card-photo-note">Info Coming Soon...</div>}
+    {!bio && <div class="card-photo-note" dir="ltr">Info Coming Soon...</div>}
   </div>
 
   <!-- Card body -->
